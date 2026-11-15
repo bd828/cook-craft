@@ -2,574 +2,546 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Шаурма-Мастер: Ночная Смена</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Шеф-Шаурма: Ночная Смена</title>
     <script src="https://yandex.ru"></script>
     <style>
-        * {
-            box-sizing: border-box;
-            user-select: none;
-            -webkit-tap-highlight-color: transparent;
+        * { box-sizing: border-box; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+        body { margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, Arial, sans-serif; background: #0d0b1a; height: 100vh; display: flex; flex-direction: column; justify-content: space-between; color: #fff; overflow: hidden; }
+        header { background: #141126; border-bottom: 3px solid #ff2a85; padding: 8px 12px; display: flex; justify-content: space-between; align-items: center; z-index: 30; }
+        .hud-group { display: flex; gap: 6px; align-items: center; }
+        .hud-pill { background: #252042; border: 2px solid #feca57; border-radius: 50px; padding: 4px 10px; font-weight: 800; font-size: 13px; }
+        .hud-btn { background: #252042; border: 2px solid #00f2fe; border-radius: 50px; padding: 5px 11px; font-weight: 800; font-size: 12px; color: #fff; cursor: pointer; }
+        .street-viewport { flex: 1; position: relative; background: linear-gradient(180deg, #090a1f 0%, #1d1b42 60%, #2e295e 100%); display: flex; flex-direction: column; justify-content: space-between; overflow: hidden; }
+        .awning { height: 14px; width: 100%; background: repeating-linear-gradient(90deg, #ee5253, #ee5253 26px, #f5f6fa 26px, #f5f6fa 52px); z-index: 15; }
+        .neon-board-wrap { display: flex; justify-content: center; z-index: 15; margin-top: 6px; }
+        .neon-board { background: #0c0a1a; border: 2px solid #ff2a85; border-radius: 12px; padding: 4px 16px; font-size: 16px; font-weight: 900; letter-spacing: 2px; color: #00f2fe; text-shadow: 0 0 8px #00f2fe; cursor: pointer; }
+        .city-bg { position: absolute; bottom: 0; left: 0; right: 0; height: 120px; background: linear-gradient(90deg, #13112b 0%, #13112b 20%, transparent 20%, transparent 25%, #181536 25%, #181536 55%, transparent 55%, transparent 60%, #121029 60%, #121029 90%, transparent 90%); z-index: 1; }
+        .customers-stage { flex: 1; display: flex; align-items: flex-end; gap: 20px; padding: 0 12px 0 8%; z-index: 10; }
+        .client-unit { display: flex; align-items: flex-end; gap: 8px; transition: all 0.4s ease; }
+        .client-unit.pos-1 { transform: scale(0.8) translateY(-8px); opacity: 0.75; }
+        .client-unit.leaving-ok { transform: translateX(120vw); opacity: 0; }
+        .client-unit.leaving-bad { transform: translateX(-120vw); opacity: 0; }
+        .body-full { display: flex; flex-direction: column; align-items: center; }
+        .head-emoji { font-size: 48px; line-height: 1; z-index: 2; margin-bottom: -7px; }
+        .jacket { width: 64px; height: 60px; border-radius: 20px 20px 6px 6px; }
+        .jeans { display: flex; gap: 6px; margin-top: -2px; }
+        .leg { width: 24px; height: 36px; background: #2c3e50; border-radius: 3px 3px 0 0; }
+        .order-card { background: #fffdf9; color: #2d3436; border-radius: 14px; padding: 7px 10px; min-width: 155px; margin-bottom: 18px; border-top: 5px solid #ff9f43; }
+        .client-unit.pos-1 .order-card { min-width: 55px; padding: 5px; text-align: center; }
+        .order-head { display: flex; justify-content: space-between; font-weight: 900; font-size: 12px; border-bottom: 1px dashed #b2bec3; padding-bottom: 3px; margin-bottom: 5px; }
+        .order-list { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 6px; }
+        .ing-tag { background: #ffeaa7; border-radius: 6px; padding: 2px 5px; font-size: 11px; font-weight: 800; }
+        .ing-tag.checked { background: #55efc4; text-decoration: line-through; opacity: 0.65; }
+        .timer-bar { width: 100%; height: 5px; background: #dfe6e9; border-radius: 5px; overflow: hidden; }
+        .timer-fill { height: 100%; width: 100%; background: #00b894; }
+        .counter-deck { background: linear-gradient(180deg, #3d4451 0%, #1c2026 100%); border-top: 5px solid #b2bec3; padding: 8px 10px 12px; display: flex; flex-direction: column; align-items: center; z-index: 20; }
+        .action-prompt { font-size: 12px; font-weight: 800; color: #feca57; min-height: 18px; margin-bottom: 6px; text-align: center; }
+        .work-stations { display: grid; grid-template-columns: 1fr 1.65fr 1fr; gap: 8px; width: 100%; max-width: 720px; margin-bottom: 8px; }
+        .station-box { background: #0f1219; border: 2px solid #576574; border-radius: 14px; padding: 6px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; min-height: 140px; }
+        .st-title { font-size: 11px; font-weight: 800; color: #c8d6e5; }
+        .st-sub { font-size: 10px; font-weight: 800; color: #ff9f43; text-align: center; }
+        .spit-zone { width: 100%; height: 80px; display: flex; align-items: center; justify-content: center; position: relative; cursor: pointer; }
+        .spit-pole { width: 6px; height: 100%; background: #dfe6e9; border-radius: 3px; }
+        .meat-roll { position: absolute; width: 46px; height: 64px; background: repeating-linear-gradient(0deg, #b33939, #b33939 7px, #e17055 7px, #e17055 13px); border-radius: 16px 16px 8px 8px; }
+        .meat-roll.depleted { width: 8px; opacity: 0.25; }
+        .sliced-badge { position: absolute; bottom: 2px; right: 2px; background: #ee5253; color: #fff; font-size: 10px; font-weight: 900; padding: 2px 5px; border-radius: 8px; }
+        .lavash-board { width: 100%; height: 80px; display: flex; align-items: center; justify-content: center; position: relative; }
+        .lavash-oval { width: 94%; height: 68px; background: #f7d794; border: 2px dashed #e1b12c; border-radius: 50%; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+        .sauce-zigzag { position: absolute; inset: 0; pointer-events: none; opacity: 0; }
+        .sauce-zigzag.visible { opacity: 1; }
+        .layers-box { display: flex; flex-wrap: wrap; justify-content: center; gap: 2px; z-index: 2; padding: 4px; }
+        .layer-emoji { font-size: 20px; }
+        .roll-ready { display: none; font-size: 50px; cursor: pointer; }
+        .lavash-board.wrapped .lavash-oval { display: none; }
+        .lavash-board.wrapped .roll-ready { display: block; }
+        .board-btns { display: flex; gap: 5px; width: 100%; }
+        .mini-btn { border: none; border-radius: 8px; padding: 5px 8px; font-weight: 800; font-size: 11px; cursor: pointer; }
+        .btn-trash { background: #576574; color: #fff; }
+        .btn-wrap { flex: 1; background: #1dd1a1; color: #12101c; }
+        .grill-plate { width: 72px; height: 62px; background: #2f3640; border: 3px solid #718093; border-radius: 10px; position: relative; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+        .grill-roll { font-size: 38px; z-index: 2; display: none; }
+        .grill-plate.active .grill-roll { display: block; }
+        .grill-plate.burnt .grill-roll { display: block; filter: grayscale(100%) brightness(0.25); }
+        .heat-bar { width: 100%; height: 8px; background: #2f3640; border-radius: 6px; position: relative; overflow: hidden; }
+        .heat-sweetspot { position: absolute; left: 58%; width: 30%; height: 100%; background: rgba(29, 209, 161, 0.5); }
+        .heat-fill { height: 100%; width: 0%; background: #feca57; }
+        .tray-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; width: 100%; max-width: 720px; }
+        .tray-item { background: #2f3640; border: 2px solid #576574; border-radius: 12px; padding: 6px 4px; text-align: center; cursor: pointer; }
+        .tray-item.locked { opacity: 0.4; cursor: default; }
+        .tray-emoji { font-size: 22px; display: block; }
+        .tray-name { font-size: 11px; font-weight: 700; display: block; margin-top: 2px; }
+        .pop-fx { position: fixed; left: 50%; top: 40%; transform: translateX(-50%); font-size: 24px; font-weight: 900; pointer-events: none; z-index: 100; animation: flyText 0.9s ease-out forwards; }
+        @keyframes flyText { 0% { opacity: 1; transform: translate(-50%, 0); } 100% { opacity: 0; transform: translate(-50%, -60px); } }
+        .modal-bg { position: fixed; inset: 0; background: rgba(10, 8, 22, 0.85); display: none; align-items: center; justify-content: center; z-index: 60; padding: 15px; }
+        .modal-bg.open { display: flex; }
+        .modal-box { background: #1e2430; border: 2px solid #00f2fe; border-radius: 20px; width: 100%; max-width: 440px; max-height: 82vh; padding: 16px; display: flex; flex-direction: column; }
+        .modal-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .btn-close { background: #ee5253; color: #fff; border: none; border-radius: 50%; width: 28px; height: 28px; font-weight: bold; cursor: pointer; }
+        .upgrades-list { overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
+        .upg-card { background: rgba(255,255,255,0.07); border-radius: 12px; padding: 10px; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+        .btn-buy { background: #1dd1a1; color: #12101c; border: none; border-radius: 10px; padding: 8px 12px; font-weight: 800; font-size: 12px; cursor: pointer; }
+        .btn-buy:disabled { background: #576574; color: #c8d6e5; cursor: default; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="hud-group">
+            <div class="hud-pill">💰 <span id="coins">0</span></div>
+            <div class="hud-pill">🔥 x<span id="combo">1</span></div>
+        </div>
+        <div class="hud-group">
+            <button class="hud-btn" id="shop-btn">🛠️ Ларек</button>
+            <button class="hud-btn" id="music-btn">🎵 Бит</button>
+        </div>
+    </header>
+
+    <section class="street-viewport">
+        <div class="awning"></div>
+        <div class="neon-board-wrap">
+            <div class="neon-board" id="neon-board">
+                <span id="board-title">ШАУРМА 24/7</span> <span>✏️</span>
+            </div>
+        </div>
+        <div class="city-bg"></div>
+        <div class="customers-stage" id="customers-stage"></div>
+    </section>
+
+    <main class="counter-deck">
+        <div class="action-prompt" id="prompt-text">Проведи по вертелу слева, чтобы нарезать мясо!</div>
+
+        <div class="work-stations">
+            <div class="station-box" id="spit-station">
+                <div class="st-title">Вертел (<span id="spit-left">6</span>)</div>
+                <div class="spit-zone" id="spit-zone">
+                    <div class="spit-pole"></div>
+                    <div class="meat-roll" id="meat-roll"></div>
+                    <div class="sliced-badge">Нарезка: <span id="cut-meat">0</span></div>
+                </div>
+                <div class="st-sub" id="spit-sub">Проведи / нажми</div>
+            </div>
+
+            <div class="station-box">
+                <div class="st-title">Лаваш (свайп ⬆️)</div>
+                <div class="lavash-board" id="lavash-board">
+                    <div class="lavash-oval" id="lavash-oval">
+                        <svg class="sauce-zigzag" id="sauce-svg" viewBox="0 0 120 60">
+                            <path d="M15,30 Q30,10 45,30 T75,30 T105,30" fill="none" stroke="#fffdf7" stroke-width="5" stroke-linecap="round"/>
+                        </svg>
+                        <div class="layers-box" id="layers-box"></div>
+                    </div>
+                    <div class="roll-ready" id="roll-ready">🌯</div>
+                </div>
+                <div class="board-btns">
+                    <button class="mini-btn btn-trash" id="btn-trash">🗑️</button>
+                    <button class="mini-btn btn-wrap" id="btn-wrap">Завернуть 🌯</button>
+                </div>
+            </div>
+
+            <div class="station-box" id="grill-station">
+                <div class="st-title">Гриль</div>
+                <div class="grill-plate" id="grill-plate">
+                    <div class="grill-roll">🌯</div>
+                </div>
+                <div class="heat-bar">
+                    <div class="heat-sweetspot"></div>
+                    <div class="heat-fill" id="heat-fill"></div>
+                </div>
+                <div class="st-sub" id="grill-sub">Пусто</div>
+            </div>
+        </div>
+
+        <div class="tray-grid" id="tray-grid"></div>
+    </main>
+
+    <div class="modal-bg" id="shop-modal">
+        <div class="modal-box">
+            <div class="modal-top">
+                <h2>🛠️ Улучшения ларька</h2>
+                <button class="btn-close" id="btn-close-shop">✕</button>
+            </div>
+            <div class="upgrades-list" id="upgrades-list"></div>
+        </div>
+    </div>
+
+    <script>
+        const INGREDIENTS = [
+            { id: 'sauce', name: 'Соус', emoji: '🧄' },
+            { id: 'meat', name: 'Мясо', emoji: '🥩' },
+            { id: 'cucumber', name: 'Огурцы', emoji: '🥒' },
+            { id: 'tomato', name: 'Томаты', emoji: '🍅' },
+            { id: 'cabbage', name: 'Капуста', emoji: '🥬' },
+            { id: 'fries', name: 'Фри', emoji: '🍟' },
+            { id: 'cheese', name: 'Сыр', emoji: '🧀' },
+            { id: 'jalapeno', name: 'Халапеньо', emoji: '🌶️' }
+        ];
+
+        const RECIPES = [
+            { title: 'Классика', req: ['sauce', 'meat', 'cabbage', 'cucumber'], price: 25 },
+            { title: 'Сырная', req: ['sauce', 'meat', 'cheese', 'tomato'], price: 35 },
+            { title: 'Острая', req: ['sauce', 'meat', 'jalapeno', 'tomato'], price: 38 },
+            { title: 'С картошкой', req: ['sauce', 'meat', 'fries', 'cucumber'], price: 30 },
+            { title: 'Фитнес-ролл', req: ['sauce', 'cabbage', 'tomato', 'cucumber'], price: 22 },
+            { title: 'Царская', req: ['sauce', 'meat', 'cheese', 'fries', 'jalapeno'], price: 50 }
+        ];
+
+        const FACES = ['🧔', '👩', '👨', '👱‍♀️', '👩‍🦰', '🧑‍🦱', '🧢', '🕶️', '🎧', '👷'];
+        const JACKETS = ['#0984e3', '#6c5ce7', '#e17055', '#00b894', '#d63031', '#e84393', '#34495e'];
+
+        let data = JSON.parse(localStorage.getItem('shawarma_v4')) || {
+            coins: 0,
+            signName: 'ШАУРМА 24/7',
+            grillLvl: 1,
+            spitMax: 6,
+            autoSlicer: false,
+            unlocked: ['sauce', 'meat', 'cucumber', 'tomato', 'cabbage', 'fries']
+        };
+
+        let spitLeft = data.spitMax;
+        let cutMeat = 0;
+        let layers = [];
+        let wrapped = false;
+        let combo = 1;
+        let grillState = 'empty';
+        let heat = 0;
+        let grillTimer = null;
+        let grillPayload = [];
+        let queue = [];
+        let patience = 100;
+        let queueTimer = null;
+        let busy = false;
+
+        if (window.YaGames) {
+            YaGames.init().then(ysdk => {
+                if (ysdk.features && ysdk.features.LoadingAPI) ysdk.features.LoadingAPI.ready();
+            }).catch(() => {});
         }
 
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background: #12101c;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            color: #ffffff;
-            overflow: hidden;
+        function save() { localStorage.setItem('shawarma_v4', JSON.stringify(data)); }
+
+        let actx = null, beatOn = false, beatTimer = null;
+        function initAudio() {
+            if (!actx) {
+                const AC = window.AudioContext || window.webkitAudioContext;
+                if (AC) actx = new AC();
+            }
         }
 
-        header {
-            background: #1b182b;
-            border-bottom: 3px solid #ff7675;
-            padding: 8px 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 20;
+        function tone(freq, dur, type, vol) {
+            if (!actx) return;
+            const o = actx.createOscillator(), g = actx.createGain();
+            o.type = type || 'sine';
+            o.frequency.setValueAtTime(freq, actx.currentTime);
+            g.gain.setValueAtTime(vol || 0.08, actx.currentTime);
+            g.gain.exponentialRampToValueAtTime(0.001, actx.currentTime + dur);
+            o.connect(g); g.connect(actx.destination);
+            o.start(); o.stop(actx.currentTime + dur);
         }
 
-        .stats-group, .header-btns {
-            display: flex;
-            gap: 6px;
+        const lofiNotes = [220, 261.6, 329.6, 293.6, 246.9, 196];
+        let noteStep = 0;
+        document.getElementById('music-btn').addEventListener('click', function() {
+            initAudio();
+            if (beatOn) {
+                clearInterval(beatTimer); beatOn = false; this.textContent = '🎵 Бит';
+            } else {
+                beatOn = true; this.textContent = '🔊 Бит';
+                beatTimer = setInterval(() => {
+                    tone(lofiNotes[noteStep], 0.35, 'triangle', 0.04);
+                    noteStep = (noteStep + 1) % lofiNotes.length;
+                }, 460);
+            }
+        });
+
+        function promptMsg(txt) { document.getElementById('prompt-text').textContent = txt; }
+
+        function popFx(txt, color) {
+            const el = document.createElement('div');
+            el.className = 'pop-fx'; el.textContent = txt; el.style.color = color || '#55efc4';
+            document.body.appendChild(el);
+            setTimeout(() => el.remove(), 900);
         }
 
-        .badge, .icon-btn {
-            background: #28243d;
-            border: 2px solid #fdcb6e;
-            border-radius: 20px;
-            padding: 5px 11px;
-            font-weight: 800;
-            font-size: 13px;
-            color: #ffffff;
+        document.getElementById('neon-board').addEventListener('click', () => {
+            const val = prompt('Название вашей шаурмичной (до 18 букв):', data.signName);
+            if (val && val.trim()) {
+                data.signName = val.trim().slice(0, 18).toUpperCase();
+                save(); updateHUD();
+            }
+        });
+
+        function updateHUD() {
+            document.getElementById('coins').textContent = data.coins;
+            document.getElementById('combo').textContent = combo;
+            document.getElementById('board-title').textContent = data.signName;
         }
 
-        .icon-btn {
-            border-color: #00cec9;
-            cursor: pointer;
+        function sliceMeatAction() {
+            initAudio();
+            if (spitLeft <= 0) {
+                spitLeft = data.spitMax; updateSpitUI();
+                promptMsg('Новый вертел установлен! Нарезайте мясо 🔪');
+                tone(440, 0.12, 'sine', 0.1);
+                return;
+            }
+            spitLeft -= 1; cutMeat += 1; updateSpitUI();
+            tone(640, 0.06, 'sawtooth', 0.07);
+            promptMsg('Мясо нарезано (' + cutMeat + ' порц.)! Нажмите на «Мясо» в лотке');
         }
 
-        .icon-btn:active {
-            transform: scale(0.92);
+        function updateSpitUI() {
+            document.getElementById('spit-left').textContent = spitLeft;
+            document.getElementById('cut-meat').textContent = cutMeat;
+            const roll = document.getElementById('meat-roll'), sub = document.getElementById('spit-sub');
+            if (spitLeft <= 0) {
+                roll.classList.add('depleted'); sub.textContent = 'Нажми: новый вертел';
+            } else {
+                roll.classList.remove('depleted');
+                roll.style.width = (18 + Math.round((spitLeft / data.spitMax) * 28)) + 'px';
+                sub.textContent = 'Проведи / нажми';
+            }
         }
 
-        .title-sign {
-            font-weight: 900;
-            font-size: 16px;
-            letter-spacing: 1px;
-            color: #ff7675;
-            text-shadow: 0 0 10px rgba(255, 118, 117, 0.7);
-            cursor: pointer;
-        }
+        const spitZone = document.getElementById('spit-zone');
+        let lastSliceTime = 0;
+        spitZone.addEventListener('click', sliceMeatAction);
+        spitZone.addEventListener('pointermove', e => {
+            if (e.buttons > 0 && Date.now() - lastSliceTime > 260) {
+                lastSliceTime = Date.now(); sliceMeatAction();
+            }
+        });
 
-        .window-zone {
-            flex: 1;
-            background: linear-gradient(180deg, #0d0c1d 0%, #241f3d 75%, #383159 100%);
-            position: relative;
-            display: flex;
-            align-items: flex-end;
-            justify-content: center;
-            padding: 10px 12px 0;
-            overflow: hidden;
-        }
+        setInterval(() => {
+            if (data.autoSlicer && spitLeft > 0 && cutMeat < 5) {
+                spitLeft -= 1; cutMeat += 1; updateSpitUI();
+            }
+        }, 3000);
 
-        .customer-card {
-            display: flex;
-            align-items: flex-end;
-            gap: 14px;
-            transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.35s;
-            transform: translateX(-120vw);
-            opacity: 0;
-        }
-
-        .customer-card.arrived {
-            transform: translateX(0);
-            opacity: 1;
-        }
-
-        .customer-card.leave-happy {
-            transform: translateX(120vw);
-            opacity: 0;
-        }
-
-        .customer-card.leave-angry {
-            transform: translateX(-120vw);
-            opacity: 0;
-        }
-
-        .customer-figure {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            animation: idleCustomer 1.6s ease-in-out infinite;
-        }
-
-        @keyframes idleCustomer {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(3px); }
-        }
-
-        .cust-head {
-            font-size: 56px;
-            line-height: 1;
-            z-index: 2;
-            margin-bottom: -8px;
-        }
-
-        .cust-body {
-            width: 74px;
-            height: 68px;
-            background: #0984e3;
-            border-radius: 24px 24px 0 0;
-            box-shadow: inset 0 -8px 15px rgba(0, 0, 0, 0.3);
-        }
-
-        .order-ticket {
-            background: #fffdf7;
-            color: #2d3436;
-            border-radius: 14px;
-            padding: 8px 12px;
-            min-width: 180px;
-            max-width: 230px;
-            margin-bottom: 14px;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
-            border-top: 5px solid #e17055;
-        }
-
-        .ticket-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-weight: 900;
-            font-size: 13px;
-            margin-bottom: 6px;
-            border-bottom: 1px dashed #b2bec3;
-            padding-bottom: 4px;
-        }
-
-        .ticket-price {
-            color: #00b894;
-        }
-
-        .ticket-ings {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 5px;
-            margin-bottom: 8px;
-        }
-
-        .ticket-chip {
-            background: #ffeaa7;
-            border-radius: 8px;
-            padding: 3px 6px;
-            font-size: 12px;
-            font-weight: 800;
-            display: flex;
-            align-items: center;
-            gap: 3px;
-        }
-
-        .ticket-chip.done {
-            background: #55efc4;
-            text-decoration: line-through;
-            opacity: 0.7;
-        }
-
-        .patience-track {
-            width: 100%;
-            height: 6px;
-            background: #dfe6e9;
-            border-radius: 6px;
-            overflow: hidden;
-        }
-
-        .patience-fill {
-            height: 100%;
-            width: 100%;
-            background: #00b894;
-            transition: width 0.2s linear, background-color 0.3s;
-        }
-
-        .kitchen-table {
-            background: linear-gradient(180deg, #4b5563 0%, #1f2937 100%);
-            border-top: 5px solid #9ca3af;
-            padding: 8px 10px 14px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            z-index: 15;
-        }
-
-        #toast-msg {
-            font-size: 12px;
-            font-weight: 800;
-            color: #ffeaa7;
-            min-height: 18px;
-            margin-bottom: 6px;
-            text-align: center;
-        }
-
-        .stations-row {
-            display: grid;
-            grid-template-columns: 1fr 1.6fr 1fr;
-            gap: 8px;
-            width: 100%;
-            max-width: 680px;
-            margin-bottom: 10px;
-        }
-
-        .station {
-            background: rgba(17, 24, 39, 0.8);
-            border: 2px solid #6b7280;
-            border-radius: 14px;
-            padding: 6px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: space-between;
-            min-height: 145px;
-        }
-
-        .spit-station, .grill-station {
-            cursor: pointer;
-        }
-
-        .spit-station:active, .grill-station:active {
-            transform: scale(0.96);
-        }
-
-        .station-label {
-            font-size: 11px;
-            font-weight: 800;
-            color: #d1d5db;
-            text-align: center;
-        }
-
-        .station-hint {
-            font-size: 10px;
-            font-weight: 800;
-            color: #fdcb6e;
-            text-align: center;
-        }
-
-        .spit-visual {
-            position: relative;
-            width: 54px;
-            height: 82px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .spit-rod {
-            width: 6px;
-            height: 100%;
-            background: #d1d5db;
-            border-radius: 4px;
-        }
-
-        .spit-meat {
-            position: absolute;
-            width: 44px;
-            height: 64px;
-            background: repeating-linear-gradient(0deg, #b33939, #b33939 8px, #cd6133 8px, #cd6133 14px);
-            border-radius: 18px 18px 10px 10px;
-            box-shadow: inset -6px 0 10px rgba(0, 0, 0, 0.45);
-            transition: width 0.25s, opacity 0.25s;
-            animation: spinMeat 2.5s linear infinite;
-        }
-
-        @keyframes spinMeat {
-            0%, 100% { transform: scaleX(1); }
-            50% { transform: scaleX(0.9); }
-        }
-
-        .spit-meat.empty {
-            width: 8px;
-            opacity: 0.2;
-        }
-
-        .lavash-wrap {
-            width: 100%;
-            height: 76px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-        }
-
-        .lavash-sheet {
-            width: 92%;
-            height: 66px;
-            background: #f7d794;
-            border: 2px dashed #e1b12c;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            overflow: hidden;
-            box-shadow: inset 0 0 10px rgba(180, 120, 40, 0.35);
-        }
-
-        .layers-stack {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            justify-content: center;
-            gap: 2px;
-            padding: 4px;
-        }
-
-        .layer-item {
-            font-size: 20px;
-            animation: dropLayer 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-
-        @keyframes dropLayer {
-            0% { transform: scale(1.7) translateY(-15px); opacity: 0; }
-            100% { transform: scale(1) translateY(0); opacity: 1; }
-        }
-
-        .wrapped-shawarma {
-            display: none;
-            font-size: 52px;
-            animation: dropLayer 0.25s ease-out;
-        }
-
-        .lavash-wrap.is-wrapped .lavash-sheet {
-            display: none;
-        }
-
-        .lavash-wrap.is-wrapped .wrapped-shawarma {
-            display: block;
-        }
-
-        .board-actions {
-            display: flex;
-            gap: 6px;
-            width: 100%;
-        }
-
-        .action-btn {
-            border: none;
-            border-radius: 8px;
-            padding: 6px 8px;
-            font-weight: 800;
-            font-size: 11px;
-            cursor: pointer;
-        }
-
-        .clear-btn {
-            background: #636e72;
-            color: #ffffff;
-        }
-
-        .wrap-btn {
-            flex: 1;
-            background: #00b894;
-            color: #ffffff;
-        }
-
-        .wrap-btn:active {
-            transform: scale(0.94);
-        }
-
-        .grill-visual {
-            width: 68px;
-            height: 64px;
-            background: #2d3436;
-border: 3px solid #636e72;
-border-radius: 10px;
-position: relative;
-display: flex;
-align-items: center;
-justify-content: center;
-overflow: hidden;
+        function renderTray() {
+            const grid = document.getElementById('tray-grid');
+            grid.innerHTML = '';
+            INGREDIENTS.forEach(ing => {
+Use code with caution.
+const ok = data.unlocked.includes(ing.id);
+const card = document.createElement('div');
+card.className = 'tray-item' + (ok ? '' : ' locked');
+card.innerHTML = '' + ing.emoji + '' + (ok ? ing.name : '🔒 Ларек') + '';
+if (ok) card.addEventListener('click', () => putIngredient(ing));
+grid.appendChild(card);
+});
 }
-.grill-lines {
-position: absolute;
-inset: 4px;
-background: repeating-linear-gradient(90deg, transparent, transparent 6px, #1e272e 6px, #1e272e 10px);
+function putIngredient(ing) {
+initAudio();
+if (wrapped) { promptMsg('Шаурма уже завернута! Нажмите на неё, чтобы отправить на гриль ➡️'); return; }
+if (ing.id === 'meat') {
+if (cutMeat <= 0) { promptMsg('Нет нарезанного мяса! Проведите по вертелу слева 🔪'); tone(200, 0.15, 'sawtooth', 0.08); return; }
+cutMeat -= 1; updateSpitUI();
 }
-.grill-item {
-font-size: 40px;
-z-index: 2;
-display: none;
+if (layers.length >= 6) { promptMsg('Лаваш полон! Нажмите «Завернуть»'); return; }
+layers.push(ing);
+tone(520, 0.07, 'sine', 0.09);
+renderBoard(); updateOrderChips();
 }
-.grill-visual.cooking .grill-item {
-display: block;
-animation: sizzle 0.25s infinite alternate;
+function renderBoard() {
+const board = document.getElementById('lavash-board'), box = document.getElementById('layers-box'), sauce = document.getElementById('sauce-svg');
+box.innerHTML = '';
+if (wrapped) {
+board.classList.add('wrapped');
+} else {
+board.classList.remove('wrapped');
+if (layers.some(i => i.id === 'sauce')) sauce.classList.add('visible');
+else sauce.classList.remove('visible');
+layers.forEach(item => {
+if (item.id === 'sauce') return;
+const el = document.createElement('span');
+el.className = 'layer-emoji'; el.textContent = item.emoji;
+box.appendChild(el);
+});
 }
-.grill-visual.burned .grill-item {
-display: block;
-filter: grayscale(100%) brightness(0.3);
 }
-@keyframes sizzle {
-from { transform: translateX(-1px) rotate(-2deg); }
-to { transform: translateX(1px) rotate(2deg); }
+function wrapAction() {
+initAudio();
+if (wrapped) return;
+if (layers.length === 0) { promptMsg('Сначала положите продукты на лаваш!'); return; }
+wrapped = true; renderBoard();
+tone(680, 0.12, 'sine', 0.1);
+promptMsg('Завернуто! Нажмите на готовую 🌯 или на Гриль справа 🔥');
 }
-.grill-meter {
-width: 100%;
-height: 8px;
-background: #374151;
-border-radius: 6px;
-position: relative;
-overflow: hidden;
-margin: 4px 0;
+const lavashBoard = document.getElementById('lavash-board');
+let startY = 0;
+lavashBoard.addEventListener('pointerdown', e => { startY = e.clientY; });
+lavashBoard.addEventListener('pointerup', e => { if (startY - e.clientY > 25) wrapAction(); });
+document.getElementById('btn-wrap').addEventListener('click', wrapAction);
+document.getElementById('btn-trash').addEventListener('click', () => {
+initAudio(); layers = []; wrapped = false; renderBoard(); updateOrderChips();
+tone(240, 0.1, 'sine', 0.08); promptMsg('Доска очищена 🗑️');
+});
+document.getElementById('roll-ready').addEventListener('click', sendToGrill);
+document.getElementById('grill-station').addEventListener('click', handleGrillClick);
+function sendToGrill() {
+initAudio();
+if (!wrapped) { promptMsg('Сначала соберите и заверните шаурму!'); return; }
+if (grillState !== 'empty') { promptMsg('Гриль занят! Сначала снимите текущую шаурму'); return; }
+grillState = 'cooking'; heat = 0;
+grillPayload = layers.map(i => i.id);
+layers = []; wrapped = false; renderBoard(); updateOrderChips();
+tone(480, 0.12, 'sine', 0.1);
+promptMsg('Жарится! Нажмите на гриль в зеленой зоне 🔥');
+const speed = 2.3 + (data.grillLvl - 1) * 0.8;
+clearInterval(grillTimer);
+grillTimer = setInterval(() => {
+heat += speed;
+if (heat >= 58 && heat <= 88) grillState = 'ready';
+else if (heat > 88) grillState = 'burnt';
+if (heat >= 100) clearInterval(grillTimer);
+updateGrillUI();
+}, 100);
+updateGrillUI();
 }
-.grill-zone-perfect {
-position: absolute;
-left: 60%;
-width: 28%;
-height: 100%;
-background: rgba(0, 184, 148, 0.45);
-border-left: 1px solid #00b894;
-border-right: 1px solid #00b894;
+function handleGrillClick() {
+if (grillState === 'empty') { sendToGrill(); return; }
+initAudio();
+if (grillState === 'burnt') {
+clearInterval(grillTimer); grillState = 'empty'; heat = 0; combo = 1;
+updateHUD(); updateGrillUI(); tone(160, 0.25, 'sawtooth', 0.1);
+promptMsg('Шаурма сгорела! Выброшено в мусорку 💀');
+return;
 }
-.grill-progress {
-height: 100%;
-width: 0%;
-background: #fdcb6e;
-transition: width 0.1s linear;
+if (grillState === 'cooking' || grillState === 'ready') {
+const isGolden = (grillState === 'ready');
+clearInterval(grillTimer); grillState = 'empty'; heat = 0; updateGrillUI();
+serveToClient(grillPayload, isGolden);
 }
-.ingredients-tray {
-display: grid;
-grid-template-columns: repeat(4, 1fr);
-gap: 6px;
-width: 100%;
-max-width: 680px;
 }
-.ing-card {
-background: #374151;
-border: 2px solid #6b7280;
-border-radius: 12px;
-padding: 6px 4px;
-text-align: center;
-cursor: pointer;
+function updateGrillUI() {
+const plate = document.getElementById('grill-plate'), sub = document.getElementById('grill-sub'), fill = document.getElementById('heat-fill');
+plate.className = 'grill-plate';
+fill.style.width = Math.min(100, heat) + '%';
+if (grillState === 'empty') { sub.textContent = 'Пусто'; fill.style.backgroundColor = '#feca57'; }
+else if (grillState === 'cooking') { plate.classList.add('active'); sub.textContent = 'Жарится...'; fill.style.backgroundColor = '#feca57'; }
+else if (grillState === 'ready') { plate.classList.add('active'); sub.textContent = 'ЗОЛОТАЯ! ЖМИ!'; fill.style.backgroundColor = '#1dd1a1'; }
+else if (grillState === 'burnt') { plate.classList.add('burnt'); sub.textContent = 'СГОРЕЛА! Выкинуть'; fill.style.backgroundColor = '#ee5253'; }
 }
-.ing-card:active {
-transform: scale(0.92);
-border-color: #fdcb6e;
+function makeClient() {
+const avail = RECIPES.filter(r => r.req.every(id => data.unlocked.includes(id)));
+return {
+order: avail[Math.floor(Math.random() * avail.length)],
+face: FACES[Math.floor(Math.random() * FACES.length)],
+jacket: JACKETS[Math.floor(Math.random() * JACKETS.length)]
+};
 }
-.ing-card.locked {
-opacity: 0.4;
-cursor: default;
+function fillQueue() { while (queue.length < 2) queue.push(makeClient()); }
+function renderQueue(leaveType) {
+const stage = document.getElementById('customers-stage');
+stage.innerHTML = '';
+queue.forEach((c, idx) => {
+const unit = document.createElement('div');
+unit.className = 'client-unit' + (idx === 1 ? ' pos-1' : '');
+if (idx === 0 && leaveType === 'ok') unit.classList.add('leaving-ok');
+if (idx === 0 && leaveType === 'bad') unit.classList.add('leaving-bad');
+let ticketHtml = idx === 0
+? '' + c.order.title + '+' + c.order.price + '💰'
+: '🌯';
+unit.innerHTML = '' + c.face + '' + ticketHtml;
+stage.appendChild(unit);
+});
+if (!leaveType) { updateOrderChips(); updatePatienceUI(); }
 }
-.ing-emoji {
-font-size: 22px;
-display: block;
+function updateOrderChips() {
+const list = document.getElementById('active-order-list');
+if (!list || !queue[0]) return;
+list.innerHTML = '';
+const counts = {};
+layers.forEach(i => { counts[i.id] = (counts[i.id] || 0) + 1; });
+queue[0].order.req.forEach(reqId => {
+const ing = INGREDIENTS.find(i => i.id === reqId);
+const chip = document.createElement('span');
+const ok = (counts[reqId] || 0) > 0;
+if (ok) counts[reqId] -= 1;
+chip.className = 'ing-tag' + (ok ? ' checked' : '');
+chip.textContent = ing.emoji + ' ' + ing.name;
+list.appendChild(chip);
+});
 }
-.ing-title {
-font-size: 11px;
-font-weight: 700;
-display: block;
-margin-top: 2px;
+function startClientTimer() {
+busy = false; patience = 100; renderQueue(null);
+clearInterval(queueTimer);
+queueTimer = setInterval(() => {
+if (document.getElementById('shop-modal').classList.contains('open')) return;
+patience -= 0.42; updatePatienceUI();
+if (patience <= 0) { clearInterval(queueTimer); combo = 1; updateHUD(); nextClient(false); }
+}, 200);
 }
-.float-score {
-position: fixed;
-left: 50%;
-top: 38%;
-transform: translateX(-50%);
-font-size: 26px;
-font-weight: 900;
-pointer-events: none;
-z-index: 100;
-animation: floatUp 0.9s ease-out forwards;
-text-shadow: 0 2px 6px rgba(0, 0, 0, 0.8);
+function updatePatienceUI() {
+const bar = document.getElementById('patience-bar');
+if (!bar) return;
+bar.style.width = Math.max(0, patience) + '%';
+bar.style.backgroundColor = patience > 50 ? '#00b894' : (patience > 25 ? '#feca57' : '#ee5253');
 }
-@keyframes floatUp {
-0% { opacity: 1; transform: translate(-50%, 0) scale(0.8); }
-100% { opacity: 0; transform: translate(-50%, -65px) scale(1.2); }
+function nextClient(isHappy) {
+busy = true; clearInterval(queueTimer);
+renderQueue(isHappy ? 'ok' : 'bad');
+if (!isHappy) { popFx('Ушел! 😠', '#ee5253'); promptMsg('Гость не дождался! Комбо сброшено 😠'); tone(180, 0.3, 'sawtooth', 0.1); }
+setTimeout(() => { queue.shift(); fillQueue(); startClientTimer(); }, 550);
 }
-.modal-overlay {
-position: fixed;
-inset: 0;
-background: rgba(0, 0, 0, 0.82);
-display: none;
-align-items: center;
-justify-content: center;
-z-index: 50;
-padding: 15px;
+function serveToClient(cookedIds, isGolden) {
+if (busy || !queue[0]) return;
+const target = queue[0].order;
+if ([...target.req].sort().join(',') === [...cookedIds].sort().join(',')) {
+const earned = target.price + (isGolden ? 10 : 0) + (combo - 1) * 3;
+data.coins += earned; combo = Math.min(5, combo + 1);
+save(); updateHUD();
+popFx('+' + earned + ' 💰 (x' + combo + ')', '#55efc4');
+promptMsg(isGolden ? 'Идеальная корочка! +' + earned + '💰' : 'Заказ отдан! +' + earned + '💰');
+tone(523.25, 0.1, 'sine', 0.1);
+setTimeout(() => tone(659.25, 0.1, 'sine', 0.1), 80);
+setTimeout(() => tone(783.99, 0.2, 'sine', 0.1), 160);
+nextClient(true);
+} else {
+combo = 1; updateHUD(); popFx('Не тот состав! ❌', '#ee5253');
+promptMsg('Ошибка в рецепте! Посмотрите на чек клиента'); tone(200, 0.25, 'sawtooth', 0.1);
 }
-.modal-overlay.open {
-display: flex;
 }
-.modal-card {
-background: #1f2937;
-border: 2px solid #00cec9;
-border-radius: 20px;
-width: 100%;
-max-width: 440px;
-max-height: 80vh;
-padding: 16px;
-display: flex;
-flex-direction: column;
+function renderShop() {
+const list = document.getElementById('upgrades-list');
+list.innerHTML = '';
+const gCost = data.grillLvl * 70;
+const gCard = document.createElement('div');
+gCard.className = 'upg-card';
+gCard.innerHTML = '🔥 Турбо-Гриль (Ур. ' + data.grillLvl + ')Ускоряет жарку шаурмы<button class="btn-buy" ' + (data.coins < gCost ? 'disabled' : '') + '>' + gCost + ' 💰';
+gCard.querySelector('button').addEventListener('click', () => {
+if (data.coins >= gCost) { data.coins -= gCost; data.grillLvl += 1; save(); updateHUD(); renderShop(); tone(650, 0.2, 'sine', 0.1); }
+});
+list.appendChild(gCard);
+const aCard = document.createElement('div');
+aCard.className = 'upg-card';
+aCard.innerHTML = '🤖 Авто-нарезчик мясаСам срезает мясо каждые 3 сек<button class="btn-buy" ' + (data.autoSlicer || data.coins < 120 ? 'disabled' : '') + '>' + (data.autoSlicer ? 'Куплено' : '120 💰') + '';
+aCard.querySelector('button').addEventListener('click', () => {
+if (!data.autoSlicer && data.coins >= 120) { data.coins -= 120; data.autoSlicer = true; save(); updateHUD(); renderShop(); tone(700, 0.2, 'sine', 0.1); }
+});
+list.appendChild(aCard);
+[
+{ id: 'cheese', title: '🧀 Сыр Чеддер', desc: 'Открывает «Сырную» (+35💰)', cost: 60 },
+{ id: 'jalapeno', title: '🌶️ Халапеньо', desc: 'Открывает «Острую» и «Царскую» (+50💰)', cost: 100 }
+].forEach(u => {
+const bought = data.unlocked.includes(u.id);
+const card = document.createElement('div');
+card.className = 'upg-card';
+card.innerHTML = '' + u.title + '' + u.desc + '<button class="btn-buy" ' + (bought || data.coins < u.cost ? 'disabled' : '') + '>' + (bought ? 'Открыто' : u.cost + ' 💰') + '';
+card.querySelector('button').addEventListener('click', () => {
+if (!bought && data.coins >= u.cost) { data.coins -= u.cost; data.unlocked.push(u.id); save(); updateHUD(); renderTray(); renderShop(); tone(700, 0.2, 'sine', 0.1); }
+});
+list.appendChild(card);
+});
 }
-.modal-header {
-display: flex;
-justify-content: space-between;
-align-items: center;
-margin-bottom: 12px;
-}
-.modal-header h2 {
-margin: 0;
-font-size: 18px;
-color: #fdcb6e;
-}
-.close-btn {
-background: #ff7675;
-color: #ffffff;
-border: none;
-border-radius: 50%;
-width: 28px;
-height: 28px;
-font-weight: bold;
-cursor: pointer;
-}
-.shop-list {
-overflow-y: auto;
-display: flex;
-flex-direction: column;
-gap: 8px;
-}
-.shop-row {
-background: rgba(255, 255, 255, 0.07);
-border-radius: 12px;
-padding: 10px;
-display: flex;
-justify-content: space-between;
-align-items: center;
-gap: 10px;
-}
-.shop-row h3 {
-margin: 0 0 3px 0;
-font-size: 14px;
-}
-.shop-row p {
-margin: 0;
-font-size: 11px;
-color: #d1d5db;
-}
-.buy-btn {
-background: #00b894;
-color: #ffffff;
-border: none;
-border-radius: 10px;
-padding: 8px 12px;
-font-weight: 800;
-font-size: 12px;
-cursor: pointer;
-white-space: nowrap;
-}
-.buy-btn:disabled {
-background: #4b5563;
-color: #9ca3af;
-cursor: default;
-}
+document.getElementById('shop-btn').addEventListener('click', () => { renderShop(); document.getElementById('shop-modal').classList.add('open'); });
+document.getElementById('btn-close-shop').addEventListener('click', () => { document.getElementById('shop-modal').classList.remove('open'); });
+document.getElementById('shop-modal').addEventListener('click', e => { if (e.target === e.currentTarget) e.currentTarget.classList.remove('open'); });
+updateHUD(); updateSpitUI(); renderTray(); updateGrillUI(); fillQueue(); startClientTimer();
+
+
+</script>
+
+</body>
+</html>
