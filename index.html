@@ -3,75 +3,98 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Ночной Фудтрак</title>
+    <title>Шаурма-Мастер: Ночная Смена</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://yandex.ru"></script>
 </head>
 <body>
 
-    <div class="street-scene">
-        <div class="stars"></div>
-        <div class="moon"></div>
-        <div class="buildings">
-            <div class="bld b1"></div>
-            <div class="bld b2"></div>
-            <div class="bld b3"></div>
-            <div class="bld b4"></div>
-            <div class="bld b5"></div>
-        </div>
-        <div class="street-lamp">
-            <div class="lamp-head"></div>
-            <div class="lamp-glow"></div>
-        </div>
-        <div class="sidewalk"></div>
-    </div>
-
-    <div class="truck-frame-top"></div>
-
     <header>
         <div class="stats-group">
             <div class="badge">💰 <span id="coins">0</span></div>
-            <div class="badge">⭐ Ур. <span id="level">1</span></div>
+            <div class="badge">🌯 <span id="sold-count">0</span></div>
         </div>
+        <div class="title-sign" id="shop-sign">ШАУРМА 24/7</div>
         <div class="header-btns">
-            <button class="icon-btn" id="shop-btn">🛠️ Улучшения</button>
-            <button class="icon-btn" id="music-btn">🎵 Выкл</button>
+            <button class="icon-btn" id="shop-btn">🛠️ Ларек</button>
+            <button class="icon-btn" id="music-btn">🎵</button>
         </div>
     </header>
 
-    <div class="center-sign-wrap">
-        <div class="neon-sign" id="neon-sign" title="Нажмите, чтобы изменить название">
-            <span id="sign-text">STREET FOOD</span>
-            <span class="edit-hint" id="edit-sign-badge">✏️</span>
+    <!-- Зона клиента за окном -->
+    <section class="window-zone">
+        <div class="customer-card" id="customer-card">
+            <div class="customer-figure">
+                <div class="cust-head" id="cust-avatar">🧔</div>
+                <div class="cust-body" id="cust-shirt"></div>
+            </div>
+            <div class="order-ticket">
+                <div class="ticket-header">
+                    <span class="ticket-title" id="order-title">Классическая</span>
+                    <span class="ticket-price" id="order-price">+25💰</span>
+                </div>
+                <div class="ticket-ings" id="order-ings"></div>
+                <div class="patience-track">
+                    <div class="patience-fill" id="patience-fill"></div>
+                </div>
+            </div>
         </div>
-    </div>
-
-    <aside class="side-menu" id="side-menu">
-        <div class="side-menu-header">
-            <span>📋 Меню</span>
-            <span class="hint-tag" id="hint-status">До 10 ур.</span>
-        </div>
-        <div class="side-recipe-list" id="side-recipe-list"></div>
-    </aside>
-
-    <main class="queue-area" id="queue-area"></main>
-
-    <section class="truck-counter">
-        <div class="counter-top-edge"></div>
-        <div id="status-msg">Соберите заказ первого гостя в очереди!</div>
-        <div class="cooking-row">
-            <div class="slot" id="slot-0"></div>
-            <div class="plus-sign">+</div>
-            <div class="slot" id="slot-1"></div>
-            <button class="cook-btn" id="serve-btn">Выдать 🛎️</button>
-        </div>
-        <div class="ingredients-dock" id="ingredients-dock"></div>
     </section>
 
+    <!-- Рабочий стол шаурмиста -->
+    <main class="kitchen-table">
+        <div id="toast-msg">Нарежьте мясо с вертела и соберите заказ!</div>
+
+        <div class="stations-row">
+            <!-- Слева: Вертел с мясом -->
+            <div class="station spit-station" id="spit-btn">
+                <div class="station-label">Вертел (<span id="meat-stock">5</span>)</div>
+                <div class="spit-visual" id="spit-visual">
+                    <div class="spit-rod"></div>
+                    <div class="spit-meat" id="spit-meat"></div>
+                </div>
+                <div class="station-hint" id="spit-hint">Нажми: срезать</div>
+            </div>
+
+            <!-- Центр: Доска и лаваш -->
+            <div class="station board-station">
+                <div class="station-label">Сборка на лаваше</div>
+                <div class="lavash-wrap" id="lavash-area">
+                    <div class="lavash-sheet" id="lavash-sheet">
+                        <div class="layers-stack" id="layers-stack"></div>
+                    </div>
+                    <div class="wrapped-shawarma" id="wrapped-shawarma">🌯</div>
+                </div>
+                <div class="board-actions">
+                    <button class="action-btn clear-btn" id="trash-btn">🗑️</button>
+                    <button class="action-btn wrap-btn" id="wrap-btn">Завернуть</button>
+                </div>
+            </div>
+
+            <!-- Справа: Контактный гриль -->
+            <div class="station grill-station" id="grill-btn">
+                <div class="station-label">Гриль</div>
+                <div class="grill-visual" id="grill-visual">
+                    <div class="grill-lines"></div>
+                    <div class="grill-item" id="grill-item">🌯</div>
+                </div>
+                <div class="grill-meter">
+                    <div class="grill-zone-perfect"></div>
+                    <div class="grill-progress" id="grill-progress"></div>
+                </div>
+                <div class="station-hint" id="grill-hint">Пусто</div>
+            </div>
+        </div>
+
+        <!-- Лоток с ингредиентами внизу -->
+        <div class="ingredients-tray" id="ingredients-tray"></div>
+    </main>
+
+    <!-- Модальное окно прокачки ларька -->
     <div class="modal-overlay" id="shop-modal">
         <div class="modal-card">
             <div class="modal-header">
-                <h2>🛠️ Прокачка фудтрака</h2>
+                <h2>🛠️ Прокачка ларька</h2>
                 <button class="close-btn" id="close-shop-btn">✕</button>
             </div>
             <div class="shop-list" id="shop-list"></div>
