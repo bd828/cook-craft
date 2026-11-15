@@ -1,39 +1,48 @@
 const allIngredients = [
-    { id: 'bun', name: 'Булка', emoji: '🥖', unlocked: true },
-    { id: 'sausage', name: 'Сосиска', emoji: '🌭', unlocked: true },
-    { id: 'patty', name: 'Котлета', emoji: '🥩', unlocked: true },
-    { id: 'cheese', name: 'Сыр', emoji: '🧀', unlocked: true },
-    { id: 'tomato', name: 'Томат', emoji: '🍅', unlocked: false },
-    { id: 'potato', name: 'Картофель', emoji: '🥔', unlocked: false },
-    { id: 'dough', name: 'Тесто', emoji: '🫓', unlocked: false },
-    { id: 'choco', name: 'Шоколад', emoji: '🍫', unlocked: false }
+    { id: 'bun', name: 'Булка', emoji: '🥖' },
+    { id: 'sausage', name: 'Сосиска', emoji: '🌭' },
+    { id: 'patty', name: 'Котлета', emoji: '🥩' },
+    { id: 'cheese', name: 'Сыр', emoji: '🧀' },
+    { id: 'salad', name: 'Салат', emoji: '🥬' },
+    { id: 'sauce', name: 'Соус', emoji: '🥫' },
+    { id: 'potato', name: 'Картофель', emoji: '🥔' },
+    { id: 'dough', name: 'Тесто', emoji: '🫓' },
+    { id: 'chicken', name: 'Курица', emoji: '🍗' },
+    { id: 'choco', name: 'Шоколад', emoji: '🍫' }
 ];
 
 const allRecipes = [
     { item1: 'bun', item2: 'sausage', name: 'Хот-дог', emoji: '🌭', price: 15 },
     { item1: 'bun', item2: 'patty', name: 'Бургер', emoji: '🍔', price: 20 },
-    { item1: 'bun', item2: 'cheese', name: 'Тост с сыром', emoji: '🥪', price: 15 },
+    { item1: 'bun', item2: 'cheese', name: 'Сырный тост', emoji: '🥪', price: 15 },
     { item1: 'patty', item2: 'cheese', name: 'Чизбургер', emoji: '🍔', price: 25 },
-    { item1: 'patty', item2: 'tomato', name: 'Стейк-салат', emoji: '🥗', price: 30 },
-    { item1: 'potato', item2: 'cheese', name: 'Фри с сыром', emoji: '🍟', price: 28 },
-    { item1: 'dough', item2: 'cheese', name: 'Пицца', emoji: '🍕', price: 35 },
-    { item1: 'dough', item2: 'tomato', name: 'Маргарита', emoji: '🍕', price: 32 },
-    { item1: 'dough', item2: 'choco', name: 'Пончик', emoji: '🍩', price: 35 },
-    { item1: 'bun', item2: 'choco', name: 'Круассан', emoji: '🥐', price: 30 }
+    { item1: 'patty', item2: 'salad', name: 'Фитнес-стейк', emoji: '🥗', price: 22 },
+    { item1: 'sausage', item2: 'sauce', name: 'Колбаски гриль', emoji: '🍖', price: 18 },
+    { item1: 'salad', item2: 'cheese', name: 'Греческий салат', emoji: '🥗', price: 18 },
+    { item1: 'bun', item2: 'sauce', name: 'Сэндвич', emoji: '🥪', price: 15 },
+    { item1: 'potato', item2: 'sauce', name: 'Картошка фри', emoji: '🍟', price: 28 },
+    { item1: 'potato', item2: 'cheese', name: 'Фри с сыром', emoji: '🍟', price: 32 },
+    { item1: 'dough', item2: 'cheese', name: 'Пицца 4 сыра', emoji: '🍕', price: 35 },
+    { item1: 'dough', item2: 'sauce', name: 'Пепперони', emoji: '🍕', price: 35 },
+    { item1: 'chicken', item2: 'sauce', name: 'Острые крылья', emoji: '🍗', price: 38 },
+    { item1: 'chicken', item2: 'salad', name: 'Цезарь ролл', emoji: '🌯', price: 36 },
+    { item1: 'dough', item2: 'choco', name: 'Пончик', emoji: '🍩', price: 40 },
+    { item1: 'bun', item2: 'choco', name: 'Круассан', emoji: '🥐', price: 36 }
 ];
 
 const avatars = ['🧑', '👩', '👨', '🧔', '👱‍♀️', '👩‍🦰', '🧑‍🦱', '🧢', '🕶️', '🎧'];
 
-let state = JSON.parse(localStorage.getItem('foodtruck_save')) || {
+let state = JSON.parse(localStorage.getItem('foodtruck_v2')) || {
     coins: 0,
     ordersDone: 0,
     grillLevel: 1,
     neonBought: false,
-    unlockedIngs: ['bun', 'sausage', 'patty', 'cheese']
+    signName: 'STREET FOOD',
+    unlockedIngs: ['bun', 'sausage', 'patty', 'cheese', 'salad', 'sauce']
 };
 
 let selected = [];
-let currentOrder = null;
+let queue = [];
 let patience = 100;
 let gameLoop = null;
 let isTransitioning = false;
@@ -47,11 +56,11 @@ if (window.YaGames) {
 }
 
 function saveGame() {
-    localStorage.setItem('foodtruck_save', JSON.stringify(state));
+    localStorage.setItem('foodtruck_v2', JSON.stringify(state));
 }
 
 function getLevel() {
-    return Math.floor(state.ordersDone / 3) + 1;
+    return Math.floor(state.ordersDone / 4) + 1;
 }
 
 // Звуки
@@ -104,8 +113,8 @@ function spawnEffect(text, color) {
     el.className = 'floating-fx';
     el.textContent = text;
     el.style.color = color || '#1dd1a1';
-    el.style.left = '45%';
-    el.style.top = '42%';
+    el.style.left = '35%';
+    el.style.top = '45%';
     document.body.appendChild(el);
     setTimeout(function() { el.remove(); }, 1000);
 }
@@ -116,13 +125,34 @@ function getAvailableRecipes() {
     });
 }
 
+// Смена названия на вывеске
+function renameSign() {
+    if (!state.neonBought) {
+        document.getElementById('status-msg').textContent = 'Купите неоновую вывеску в 🛠️ Улучшениях, чтобы менять название!';
+        return;
+    }
+    const newName = prompt('Введите новое название вашего фудтрака (до 18 символов):', state.signName);
+    if (newName && newName.trim().length > 0) {
+        state.signName = newName.trim().slice(0, 18);
+        saveGame();
+        renderUI();
+    }
+}
+
+document.getElementById('neon-sign').addEventListener('click', renameSign);
+
 function renderUI() {
     const lvl = getLevel();
     document.getElementById('coins').textContent = state.coins;
     document.getElementById('level').textContent = lvl;
 
+    // Вывеска по центру
+    const signEl = document.getElementById('neon-sign');
+    document.getElementById('sign-text').textContent = state.signName;
     if (state.neonBought) {
-        document.getElementById('neon-decor').classList.add('active');
+        signEl.classList.add('bought');
+    } else {
+        signEl.classList.remove('bought');
     }
 
     // Нижняя полка продуктов
@@ -137,15 +167,17 @@ function renderUI() {
         dock.appendChild(btn);
     });
 
-    // Боковая шпаргалка (работает до 10 уровня)
+    // Боковая шпаргалка справа (до 10 уровня)
     const sideMenu = document.getElementById('side-menu');
     const sideList = document.getElementById('side-recipe-list');
     const hintStatus = document.getElementById('hint-status');
     sideList.innerHTML = '';
 
+    const oldLock = sideMenu.querySelector('.locked-msg');
+    if (oldLock) oldLock.remove();
+
     if (lvl <= 10) {
-        sideMenu.classList.remove('locked');
-        hintStatus.textContent = 'Активна (до 10 ур.)';
+        hintStatus.textContent = 'До 10 ур.';
         getAvailableRecipes().forEach(function(r) {
             const i1 = allIngredients.find(function(i) { return i.id === r.item1; });
             const i2 = allIngredients.find(function(i) { return i.id === r.item2; });
@@ -155,11 +187,10 @@ function renderUI() {
             sideList.appendChild(row);
         });
     } else {
-        sideMenu.classList.add('locked');
-        hintStatus.textContent = 'Режим Шефа (10+ ур.)';
+        hintStatus.textContent = '10+ ур.';
         const lockNote = document.createElement('div');
         lockNote.className = 'locked-msg';
-        lockNote.textContent = 'Подсказки отключены! Готовьте по памяти 🔥';
+        lockNote.textContent = 'Подсказки закрыты! Режим настоящего шефа 🔥';
         sideMenu.appendChild(lockNote);
     }
 }
@@ -168,7 +199,31 @@ function renderShop() {
     const list = document.getElementById('shop-list');
     list.innerHTML = '';
 
-    // 1. Улучшение гриля
+    // 1. Неоновая вывеска + смена названия
+    const neonDiv = document.createElement('div');
+    neonDiv.className = 'shop-item';
+    neonDiv.innerHTML =
+        '<div class="shop-info"><h3>💡 Неоновая вывеска</h3>' +
+        '<p>Зажигает вывеску по центру, дает свое название и +30% к терпению гостей</p></div>' +
+        '<button class="buy-btn" ' + (!state.neonBought && state.coins < 70 ? 'disabled' : '') + '>' +
+        (state.neonBought ? '✏️ Название' : '70 💰') + '</button>';
+    neonDiv.querySelector('button').addEventListener('click', function() {
+        if (state.neonBought) {
+            renameSign();
+            renderShop();
+        } else if (state.coins >= 70) {
+            state.coins -= 70;
+            state.neonBought = true;
+            saveGame();
+            renderUI();
+            renderShop();
+            playTone(650, 0.25, 'sine', 0.1);
+            renameSign();
+        }
+    });
+    list.appendChild(neonDiv);
+
+    // 2. Улучшение гриля
     const grillCost = state.grillLevel * 60;
     const grillDiv = document.createElement('div');
     grillDiv.className = 'shop-item';
@@ -188,32 +243,12 @@ function renderShop() {
     });
     list.appendChild(grillDiv);
 
-    // 2. Неоновая вывеска
-    const neonDiv = document.createElement('div');
-    neonDiv.className = 'shop-item';
-    neonDiv.innerHTML =
-        '<div class="shop-info"><h3>💡 Неоновая вывеска</h3>' +
-        '<p>Гости ждут на 30% дольше и любуются улицей</p></div>' +
-        '<button class="buy-btn" ' + (state.neonBought || state.coins < 90 ? 'disabled' : '') + '>' +
-        (state.neonBought ? 'Куплено' : '90 💰') + '</button>';
-    neonDiv.querySelector('button').addEventListener('click', function() {
-        if (!state.neonBought && state.coins >= 90) {
-            state.coins -= 90;
-            state.neonBought = true;
-            saveGame();
-            renderUI();
-            renderShop();
-            playTone(650, 0.2, 'sine', 0.1);
-        }
-    });
-    list.appendChild(neonDiv);
-
     // 3. Новые продукты
     const unlockItems = [
-        { id: 'tomato', title: '🍅 Свежие томаты', desc: 'Открывает стейк-салат', cost: 50 },
-        { id: 'potato', title: '🥔 Картофель фри', desc: 'Открывает фри с сыром', cost: 80 },
-        { id: 'dough', title: '🫓 Тесто для пиццы', desc: 'Открывает пиццу', cost: 120 },
-        { id: 'choco', title: '🍫 Бельгийский шоколад', desc: 'Открывает десерты', cost: 160 }
+        { id: 'potato', title: '🥔 Картофель фри', desc: 'Открывает картошку фри и фри с сыром', cost: 50 },
+        { id: 'dough', title: '🫓 Тесто для пиццы', desc: 'Открывает пиццу 4 сыра и пепперони', cost: 90 },
+        { id: 'chicken', title: '🍗 Курочка гриль', desc: 'Открывает острые крылья и цезарь ролл', cost: 130 },
+        { id: 'choco', title: '🍫 Бельгийский шоколад', desc: 'Открывает пончики и круассаны', cost: 170 }
     ];
 
     unlockItems.forEach(function(u) {
@@ -221,73 +256,63 @@ function renderShop() {
         const div = document.createElement('div');
         div.className = 'shop-item';
         div.innerHTML =
-            '<div class="shop-info"><h3>' + u.title + '</h3><p>' + u.desc + '</p></div>' +
-            '<button class="buy-btn" ' + (isBought || state.coins < u.cost ? 'disabled' : '') + '>' +
-            (isBought ? 'Открыто' : u.cost + ' 💰') + '</button>';
-        div.querySelector('button').addEventListener('click', function() {
-            if (!isBought && state.coins >= u.cost) {
-                state.coins -= u.cost;
-                state.unlockedIngs.push(u.id);
-                saveGame();
-                renderUI();
-                renderShop();
-                playTone(700, 0.25, 'sine', 0.1);
-            }
-        });
-        list.appendChild(div);
-    });
+'' + u.title + '' + u.desc + '' +
+'<button class="buy-btn" ' + (isBought || state.coins < u.cost ? 'disabled' : '') + '>' +
+(isBought ? 'Открыто' : u.cost + ' 💰') + '';
+div.querySelector('button').addEventListener('click', function() {
+if (!isBought && state.coins >= u.cost) {
+state.coins -= u.cost;
+state.unlockedIngs.push(u.id);
+saveGame();
+renderUI();
+renderShop();
+playTone(700, 0.25, 'sine', 0.1);
 }
-
-function addIng(ing) {
-    if (isTransitioning) return;
-    initAudio();
-    if (selected.length < 2) {
-        selected.push(ing);
-        playTone(500, 0.08, 'sine', 0.1);
-        updateSlots();
-    }
+});
+list.appendChild(div);
+});
 }
-
-function removeIng(idx) {
-    if (selected.at(idx)) {
-        initAudio();
-        selected.splice(idx, 1);
-        playTone(300, 0.08, 'sine', 0.1);
-        updateSlots();
-    }
-}
-
-function updateSlots() {
-    for (let i = 0; i < 2; i++) {
-        const slot = document.getElementById('slot-' + i);
-        const item = selected.at(i);
-        if (item) {
-            slot.textContent = item.emoji;
-            slot.classList.add('filled');
-        } else {
-            slot.textContent = '';
-            slot.classList.remove('filled');
-        }
-    }
-}
-
-function nextCustomer() {
-    isTransitioning = false;
-const box = document.getElementById('customer-box');
-box.className = 'customer-wrapper';
+// Очередь посетителей
+function createCustomerObj() {
 const available = getAvailableRecipes();
-currentOrder = available.at(Math.floor(Math.random() * available.length));
-const avatar = avatars.at(Math.floor(Math.random() * avatars.length));
-document.getElementById('customer-avatar').textContent = avatar;
-document.getElementById('order-emoji').textContent = currentOrder.emoji;
-document.getElementById('order-name').textContent = currentOrder.name;
+return {
+order: available.at(Math.floor(Math.random() * available.length)),
+avatar: avatars.at(Math.floor(Math.random() * avatars.length))
+};
+}
+function fillQueue() {
+while (queue.length < 3) {
+queue.push(createCustomerObj());
+}
+}
+function renderQueue(leaveStatus) {
+const area = document.getElementById('queue-area');
+area.innerHTML = '';
+queue.forEach(function(cust, index) {
+const card = document.createElement('div');
+card.className = 'customer-card ' + (index === 0 ? 'active' : 'waiting');
+if (index === 0 && leaveStatus === 'happy') card.classList.add('leaving-happy');
+if (index === 0 && leaveStatus === 'angry') card.classList.add('leaving-angry');
+let barHtml = '';
+if (index === 0) {
+barHtml = '';
+}
+card.innerHTML =
+'' +
+'' + cust.order.emoji + '' +
+(index === 0 ? '' + cust.order.name + '' : '') +
+barHtml +
+'' +
+'' + cust.avatar + '';
+area.appendChild(card);
+});
+if (!leaveStatus) updatePatienceBar();
+}
+function startActiveCustomerTimer() {
+isTransitioning = false;
 patience = 100;
-updatePatienceBar();
-setTimeout(function() {
-box.classList.add('arrived');
-playTone(440, 0.1, 'sine', 0.05);
-}, 50);
-const drainSpeed = state.neonBought ? 0.45 : 0.65;
+renderQueue(null);
+const drainSpeed = state.neonBought ? 0.35 : 0.52;
 clearInterval(gameLoop);
 gameLoop = setInterval(function() {
 if (document.getElementById('shop-modal').classList.contains('open')) return;
@@ -301,6 +326,7 @@ customerLeave(false);
 }
 function updatePatienceBar() {
 const fill = document.getElementById('patience-fill');
+if (!fill) return;
 fill.style.width = Math.max(0, patience) + '%';
 if (patience > 50) fill.style.backgroundColor = '#1dd1a1';
 else if (patience > 25) fill.style.backgroundColor = '#feca57';
@@ -309,40 +335,73 @@ else fill.style.backgroundColor = '#ee5253';
 function customerLeave(isHappy) {
 isTransitioning = true;
 clearInterval(gameLoop);
-const box = document.getElementById('customer-box');
 const msg = document.getElementById('status-msg');
+const currentCustomer = queue.at(0);
 if (isHappy) {
 const grillBonus = (state.grillLevel - 1) * 5;
 const tip = patience > 55 ? 5 : 0;
-const total = currentOrder.price + grillBonus + tip;
+const total = currentCustomer.order.price + grillBonus + tip;
 state.coins += total;
 state.ordersDone += 1;
 saveGame();
 renderUI();
-box.classList.remove('arrived');
-box.classList.add('leaving-happy');
-msg.textContent = tip > 0 ? 'Вкуснотища! +' + total + '💰 (чаевые!)' : 'Заказ выдан! +' + total + '💰';
+renderQueue('happy');
+msg.textContent = tip > 0 ? 'Супер! +' + total + '💰 (с чаевыми!)' : 'Отдано! +' + total + '💰';
 spawnEffect('+' + total + ' 💰', '#1dd1a1');
 playTone(523.25, 0.12, 'sine', 0.1);
 setTimeout(function() { playTone(659.25, 0.12, 'sine', 0.1); }, 90);
 setTimeout(function() { playTone(783.99, 0.25, 'sine', 0.1); }, 180);
 } else {
-box.classList.remove('arrived');
-box.classList.add('leaving-angry');
-msg.textContent = 'Клиент не дождался и ушел в соседнее кафе 😠';
+renderQueue('angry');
+msg.textContent = 'Первый гость не дождался! Подошел следующий из очереди 😠';
 spawnEffect('Ушел! 😠', '#ee5253');
 playTone(180, 0.3, 'sawtooth', 0.1);
 }
 selected = [];
 updateSlots();
-setTimeout(nextCustomer, 850);
+setTimeout(function() {
+queue.shift();
+fillQueue();
+startActiveCustomerTimer();
+}, 550);
+}
+function addIng(ing) {
+if (isTransitioning) return;
+initAudio();
+if (selected.length < 2) {
+selected.push(ing);
+playTone(500, 0.08, 'sine', 0.1);
+updateSlots();
+}
+}
+function removeIng(idx) {
+if (selected.at(idx)) {
+initAudio();
+selected.splice(idx, 1);
+playTone(300, 0.08, 'sine', 0.1);
+updateSlots();
+}
+}
+function updateSlots() {
+for (let i = 0; i < 2; i++) {
+const slot = document.getElementById('slot-' + i);
+const item = selected.at(i);
+if (item) {
+slot.textContent = item.emoji;
+slot.classList.add('filled');
+} else {
+slot.textContent = '';
+slot.classList.remove('filled');
+}
+}
 }
 function serveDish() {
 if (isTransitioning) return;
 initAudio();
 const msg = document.getElementById('status-msg');
+const currentOrder = queue.at(0).order;
 if (selected.length < 2) {
-msg.textContent = 'Положите 2 продукта на прилавок!';
+msg.textContent = 'Выберите 2 продукта на прилавок!';
 playTone(200, 0.15, 'sawtooth', 0.08);
 return;
 }
@@ -353,7 +412,7 @@ return (r.item1 === firstId && r.item2 === secondId) ||
 (r.item1 === secondId && r.item2 === firstId);
 });
 if (!cooked) {
-msg.textContent = 'Продукты не сочетаются! Гляньте шпаргалку справа';
+msg.textContent = 'Такого блюда нет! Посмотрите 📋 Меню справа';
 spawnEffect('Не вышло 💥', '#ff9f43');
 playTone(160, 0.25, 'sawtooth', 0.1);
 selected = [];
@@ -363,7 +422,7 @@ return;
 if (cooked.name === currentOrder.name) {
 customerLeave(true);
 } else {
-msg.textContent = 'Получился ' + cooked.name + ', а гость заказывал ' + currentOrder.name + '!';
+msg.textContent = 'Вы сделали ' + cooked.name + ', а первый гость ждет ' + currentOrder.name + '!';
 spawnEffect('Не тот заказ ❌', '#ee5253');
 playTone(220, 0.2, 'sawtooth', 0.1);
 selected = [];
@@ -384,4 +443,5 @@ document.getElementById('shop-modal').addEventListener('click', function(e) {
 if (e.target === this) document.getElementById('shop-modal').classList.remove('open');
 });
 renderUI();
-setTimeout(nextCustomer, 400);
+fillQueue();
+startActiveCustomerTimer();
