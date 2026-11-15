@@ -9,12 +9,24 @@
 </head>
 <body>
 
-    <div class="street-bg">
-        <div class="neon-sign" id="neon-decor">STREET FOOD</div>
-        <div class="city-skyline"></div>
+    <div class="street-scene">
+        <div class="stars"></div>
+        <div class="moon"></div>
+        <div class="buildings">
+            <div class="bld b1"></div>
+            <div class="bld b2"></div>
+            <div class="bld b3"></div>
+            <div class="bld b4"></div>
+            <div class="bld b5"></div>
+        </div>
+        <div class="street-lamp">
+            <div class="lamp-head"></div>
+            <div class="lamp-glow"></div>
+        </div>
+        <div class="sidewalk"></div>
     </div>
 
-    <div class="truck-awning"></div>
+    <div class="truck-frame-top"></div>
 
     <header>
         <div class="stats-group">
@@ -27,29 +39,26 @@
         </div>
     </header>
 
+    <div class="center-sign-wrap">
+        <div class="neon-sign" id="neon-sign" title="Нажмите, чтобы изменить название">
+            <span id="sign-text">STREET FOOD</span>
+            <span class="edit-hint" id="edit-sign-badge">✏️</span>
+        </div>
+    </div>
+
     <aside class="side-menu" id="side-menu">
         <div class="side-menu-header">
-            <span>📋 Шпаргалка</span>
+            <span>📋 Меню</span>
             <span class="hint-tag" id="hint-status">До 10 ур.</span>
         </div>
         <div class="side-recipe-list" id="side-recipe-list"></div>
     </aside>
 
-    <main class="window-area">
-        <div class="customer-wrapper" id="customer-box">
-            <div class="order-bubble">
-                <div class="order-dish" id="order-emoji">🌭</div>
-                <div class="order-name" id="order-name">Хот-дог</div>
-                <div class="patience-bar-bg">
-                    <div class="patience-bar-fill" id="patience-fill"></div>
-                </div>
-            </div>
-            <div class="customer-avatar" id="customer-avatar">🧑</div>
-        </div>
-    </main>
+    <main class="queue-area" id="queue-area"></main>
 
     <section class="truck-counter">
-        <div id="status-msg">Гость у окна! Соберите заказ</div>
+        <div class="counter-top-edge"></div>
+        <div id="status-msg">Соберите заказ первого гостя в очереди!</div>
         <div class="cooking-row">
             <div class="slot" id="slot-0"></div>
             <div class="plus-sign">+</div>
@@ -72,4 +81,3 @@
     <script src="game.js"></script>
 </body>
 </html>
-
