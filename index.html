@@ -4,103 +4,572 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Шаурма-Мастер: Ночная Смена</title>
-    <link rel="stylesheet" href="style.css">
     <script src="https://yandex.ru"></script>
-</head>
-<body>
+    <style>
+        * {
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
 
-    <header>
-        <div class="stats-group">
-            <div class="badge">💰 <span id="coins">0</span></div>
-            <div class="badge">🌯 <span id="sold-count">0</span></div>
-        </div>
-        <div class="title-sign" id="shop-sign">ШАУРМА 24/7</div>
-        <div class="header-btns">
-            <button class="icon-btn" id="shop-btn">🛠️ Ларек</button>
-            <button class="icon-btn" id="music-btn">🎵</button>
-        </div>
-    </header>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: #12101c;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            color: #ffffff;
+            overflow: hidden;
+        }
 
-    <!-- Зона клиента за окном -->
-    <section class="window-zone">
-        <div class="customer-card" id="customer-card">
-            <div class="customer-figure">
-                <div class="cust-head" id="cust-avatar">🧔</div>
-                <div class="cust-body" id="cust-shirt"></div>
-            </div>
-            <div class="order-ticket">
-                <div class="ticket-header">
-                    <span class="ticket-title" id="order-title">Классическая</span>
-                    <span class="ticket-price" id="order-price">+25💰</span>
-                </div>
-                <div class="ticket-ings" id="order-ings"></div>
-                <div class="patience-track">
-                    <div class="patience-fill" id="patience-fill"></div>
-                </div>
-            </div>
-        </div>
-    </section>
+        header {
+            background: #1b182b;
+            border-bottom: 3px solid #ff7675;
+            padding: 8px 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 20;
+        }
 
-    <!-- Рабочий стол шаурмиста -->
-    <main class="kitchen-table">
-        <div id="toast-msg">Нарежьте мясо с вертела и соберите заказ!</div>
+        .stats-group, .header-btns {
+            display: flex;
+            gap: 6px;
+        }
 
-        <div class="stations-row">
-            <!-- Слева: Вертел с мясом -->
-            <div class="station spit-station" id="spit-btn">
-                <div class="station-label">Вертел (<span id="meat-stock">5</span>)</div>
-                <div class="spit-visual" id="spit-visual">
-                    <div class="spit-rod"></div>
-                    <div class="spit-meat" id="spit-meat"></div>
-                </div>
-                <div class="station-hint" id="spit-hint">Нажми: срезать</div>
-            </div>
+        .badge, .icon-btn {
+            background: #28243d;
+            border: 2px solid #fdcb6e;
+            border-radius: 20px;
+            padding: 5px 11px;
+            font-weight: 800;
+            font-size: 13px;
+            color: #ffffff;
+        }
 
-            <!-- Центр: Доска и лаваш -->
-            <div class="station board-station">
-                <div class="station-label">Сборка на лаваше</div>
-                <div class="lavash-wrap" id="lavash-area">
-                    <div class="lavash-sheet" id="lavash-sheet">
-                        <div class="layers-stack" id="layers-stack"></div>
-                    </div>
-                    <div class="wrapped-shawarma" id="wrapped-shawarma">🌯</div>
-                </div>
-                <div class="board-actions">
-                    <button class="action-btn clear-btn" id="trash-btn">🗑️</button>
-                    <button class="action-btn wrap-btn" id="wrap-btn">Завернуть</button>
-                </div>
-            </div>
+        .icon-btn {
+            border-color: #00cec9;
+            cursor: pointer;
+        }
 
-            <!-- Справа: Контактный гриль -->
-            <div class="station grill-station" id="grill-btn">
-                <div class="station-label">Гриль</div>
-                <div class="grill-visual" id="grill-visual">
-                    <div class="grill-lines"></div>
-                    <div class="grill-item" id="grill-item">🌯</div>
-                </div>
-                <div class="grill-meter">
-                    <div class="grill-zone-perfect"></div>
-                    <div class="grill-progress" id="grill-progress"></div>
-                </div>
-                <div class="station-hint" id="grill-hint">Пусто</div>
-            </div>
-        </div>
+        .icon-btn:active {
+            transform: scale(0.92);
+        }
 
-        <!-- Лоток с ингредиентами внизу -->
-        <div class="ingredients-tray" id="ingredients-tray"></div>
-    </main>
+        .title-sign {
+            font-weight: 900;
+            font-size: 16px;
+            letter-spacing: 1px;
+            color: #ff7675;
+            text-shadow: 0 0 10px rgba(255, 118, 117, 0.7);
+            cursor: pointer;
+        }
 
-    <!-- Модальное окно прокачки ларька -->
-    <div class="modal-overlay" id="shop-modal">
-        <div class="modal-card">
-            <div class="modal-header">
-                <h2>🛠️ Прокачка ларька</h2>
-                <button class="close-btn" id="close-shop-btn">✕</button>
-            </div>
-            <div class="shop-list" id="shop-list"></div>
-        </div>
-    </div>
+        .window-zone {
+            flex: 1;
+            background: linear-gradient(180deg, #0d0c1d 0%, #241f3d 75%, #383159 100%);
+            position: relative;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            padding: 10px 12px 0;
+            overflow: hidden;
+        }
 
-    <script src="game.js"></script>
-</body>
-</html>
+        .customer-card {
+            display: flex;
+            align-items: flex-end;
+            gap: 14px;
+            transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.35s;
+            transform: translateX(-120vw);
+            opacity: 0;
+        }
+
+        .customer-card.arrived {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        .customer-card.leave-happy {
+            transform: translateX(120vw);
+            opacity: 0;
+        }
+
+        .customer-card.leave-angry {
+            transform: translateX(-120vw);
+            opacity: 0;
+        }
+
+        .customer-figure {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            animation: idleCustomer 1.6s ease-in-out infinite;
+        }
+
+        @keyframes idleCustomer {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(3px); }
+        }
+
+        .cust-head {
+            font-size: 56px;
+            line-height: 1;
+            z-index: 2;
+            margin-bottom: -8px;
+        }
+
+        .cust-body {
+            width: 74px;
+            height: 68px;
+            background: #0984e3;
+            border-radius: 24px 24px 0 0;
+            box-shadow: inset 0 -8px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .order-ticket {
+            background: #fffdf7;
+            color: #2d3436;
+            border-radius: 14px;
+            padding: 8px 12px;
+            min-width: 180px;
+            max-width: 230px;
+            margin-bottom: 14px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+            border-top: 5px solid #e17055;
+        }
+
+        .ticket-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 900;
+            font-size: 13px;
+            margin-bottom: 6px;
+            border-bottom: 1px dashed #b2bec3;
+            padding-bottom: 4px;
+        }
+
+        .ticket-price {
+            color: #00b894;
+        }
+
+        .ticket-ings {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-bottom: 8px;
+        }
+
+        .ticket-chip {
+            background: #ffeaa7;
+            border-radius: 8px;
+            padding: 3px 6px;
+            font-size: 12px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 3px;
+        }
+
+        .ticket-chip.done {
+            background: #55efc4;
+            text-decoration: line-through;
+            opacity: 0.7;
+        }
+
+        .patience-track {
+            width: 100%;
+            height: 6px;
+            background: #dfe6e9;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .patience-fill {
+            height: 100%;
+            width: 100%;
+            background: #00b894;
+            transition: width 0.2s linear, background-color 0.3s;
+        }
+
+        .kitchen-table {
+            background: linear-gradient(180deg, #4b5563 0%, #1f2937 100%);
+            border-top: 5px solid #9ca3af;
+            padding: 8px 10px 14px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 15;
+        }
+
+        #toast-msg {
+            font-size: 12px;
+            font-weight: 800;
+            color: #ffeaa7;
+            min-height: 18px;
+            margin-bottom: 6px;
+            text-align: center;
+        }
+
+        .stations-row {
+            display: grid;
+            grid-template-columns: 1fr 1.6fr 1fr;
+            gap: 8px;
+            width: 100%;
+            max-width: 680px;
+            margin-bottom: 10px;
+        }
+
+        .station {
+            background: rgba(17, 24, 39, 0.8);
+            border: 2px solid #6b7280;
+            border-radius: 14px;
+            padding: 6px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            min-height: 145px;
+        }
+
+        .spit-station, .grill-station {
+            cursor: pointer;
+        }
+
+        .spit-station:active, .grill-station:active {
+            transform: scale(0.96);
+        }
+
+        .station-label {
+            font-size: 11px;
+            font-weight: 800;
+            color: #d1d5db;
+            text-align: center;
+        }
+
+        .station-hint {
+            font-size: 10px;
+            font-weight: 800;
+            color: #fdcb6e;
+            text-align: center;
+        }
+
+        .spit-visual {
+            position: relative;
+            width: 54px;
+            height: 82px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .spit-rod {
+            width: 6px;
+            height: 100%;
+            background: #d1d5db;
+            border-radius: 4px;
+        }
+
+        .spit-meat {
+            position: absolute;
+            width: 44px;
+            height: 64px;
+            background: repeating-linear-gradient(0deg, #b33939, #b33939 8px, #cd6133 8px, #cd6133 14px);
+            border-radius: 18px 18px 10px 10px;
+            box-shadow: inset -6px 0 10px rgba(0, 0, 0, 0.45);
+            transition: width 0.25s, opacity 0.25s;
+            animation: spinMeat 2.5s linear infinite;
+        }
+
+        @keyframes spinMeat {
+            0%, 100% { transform: scaleX(1); }
+            50% { transform: scaleX(0.9); }
+        }
+
+        .spit-meat.empty {
+            width: 8px;
+            opacity: 0.2;
+        }
+
+        .lavash-wrap {
+            width: 100%;
+            height: 76px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .lavash-sheet {
+            width: 92%;
+            height: 66px;
+            background: #f7d794;
+            border: 2px dashed #e1b12c;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: inset 0 0 10px rgba(180, 120, 40, 0.35);
+        }
+
+        .layers-stack {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 2px;
+            padding: 4px;
+        }
+
+        .layer-item {
+            font-size: 20px;
+            animation: dropLayer 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes dropLayer {
+            0% { transform: scale(1.7) translateY(-15px); opacity: 0; }
+            100% { transform: scale(1) translateY(0); opacity: 1; }
+        }
+
+        .wrapped-shawarma {
+            display: none;
+            font-size: 52px;
+            animation: dropLayer 0.25s ease-out;
+        }
+
+        .lavash-wrap.is-wrapped .lavash-sheet {
+            display: none;
+        }
+
+        .lavash-wrap.is-wrapped .wrapped-shawarma {
+            display: block;
+        }
+
+        .board-actions {
+            display: flex;
+            gap: 6px;
+            width: 100%;
+        }
+
+        .action-btn {
+            border: none;
+            border-radius: 8px;
+            padding: 6px 8px;
+            font-weight: 800;
+            font-size: 11px;
+            cursor: pointer;
+        }
+
+        .clear-btn {
+            background: #636e72;
+            color: #ffffff;
+        }
+
+        .wrap-btn {
+            flex: 1;
+            background: #00b894;
+            color: #ffffff;
+        }
+
+        .wrap-btn:active {
+            transform: scale(0.94);
+        }
+
+        .grill-visual {
+            width: 68px;
+            height: 64px;
+            background: #2d3436;
+border: 3px solid #636e72;
+border-radius: 10px;
+position: relative;
+display: flex;
+align-items: center;
+justify-content: center;
+overflow: hidden;
+}
+.grill-lines {
+position: absolute;
+inset: 4px;
+background: repeating-linear-gradient(90deg, transparent, transparent 6px, #1e272e 6px, #1e272e 10px);
+}
+.grill-item {
+font-size: 40px;
+z-index: 2;
+display: none;
+}
+.grill-visual.cooking .grill-item {
+display: block;
+animation: sizzle 0.25s infinite alternate;
+}
+.grill-visual.burned .grill-item {
+display: block;
+filter: grayscale(100%) brightness(0.3);
+}
+@keyframes sizzle {
+from { transform: translateX(-1px) rotate(-2deg); }
+to { transform: translateX(1px) rotate(2deg); }
+}
+.grill-meter {
+width: 100%;
+height: 8px;
+background: #374151;
+border-radius: 6px;
+position: relative;
+overflow: hidden;
+margin: 4px 0;
+}
+.grill-zone-perfect {
+position: absolute;
+left: 60%;
+width: 28%;
+height: 100%;
+background: rgba(0, 184, 148, 0.45);
+border-left: 1px solid #00b894;
+border-right: 1px solid #00b894;
+}
+.grill-progress {
+height: 100%;
+width: 0%;
+background: #fdcb6e;
+transition: width 0.1s linear;
+}
+.ingredients-tray {
+display: grid;
+grid-template-columns: repeat(4, 1fr);
+gap: 6px;
+width: 100%;
+max-width: 680px;
+}
+.ing-card {
+background: #374151;
+border: 2px solid #6b7280;
+border-radius: 12px;
+padding: 6px 4px;
+text-align: center;
+cursor: pointer;
+}
+.ing-card:active {
+transform: scale(0.92);
+border-color: #fdcb6e;
+}
+.ing-card.locked {
+opacity: 0.4;
+cursor: default;
+}
+.ing-emoji {
+font-size: 22px;
+display: block;
+}
+.ing-title {
+font-size: 11px;
+font-weight: 700;
+display: block;
+margin-top: 2px;
+}
+.float-score {
+position: fixed;
+left: 50%;
+top: 38%;
+transform: translateX(-50%);
+font-size: 26px;
+font-weight: 900;
+pointer-events: none;
+z-index: 100;
+animation: floatUp 0.9s ease-out forwards;
+text-shadow: 0 2px 6px rgba(0, 0, 0, 0.8);
+}
+@keyframes floatUp {
+0% { opacity: 1; transform: translate(-50%, 0) scale(0.8); }
+100% { opacity: 0; transform: translate(-50%, -65px) scale(1.2); }
+}
+.modal-overlay {
+position: fixed;
+inset: 0;
+background: rgba(0, 0, 0, 0.82);
+display: none;
+align-items: center;
+justify-content: center;
+z-index: 50;
+padding: 15px;
+}
+.modal-overlay.open {
+display: flex;
+}
+.modal-card {
+background: #1f2937;
+border: 2px solid #00cec9;
+border-radius: 20px;
+width: 100%;
+max-width: 440px;
+max-height: 80vh;
+padding: 16px;
+display: flex;
+flex-direction: column;
+}
+.modal-header {
+display: flex;
+justify-content: space-between;
+align-items: center;
+margin-bottom: 12px;
+}
+.modal-header h2 {
+margin: 0;
+font-size: 18px;
+color: #fdcb6e;
+}
+.close-btn {
+background: #ff7675;
+color: #ffffff;
+border: none;
+border-radius: 50%;
+width: 28px;
+height: 28px;
+font-weight: bold;
+cursor: pointer;
+}
+.shop-list {
+overflow-y: auto;
+display: flex;
+flex-direction: column;
+gap: 8px;
+}
+.shop-row {
+background: rgba(255, 255, 255, 0.07);
+border-radius: 12px;
+padding: 10px;
+display: flex;
+justify-content: space-between;
+align-items: center;
+gap: 10px;
+}
+.shop-row h3 {
+margin: 0 0 3px 0;
+font-size: 14px;
+}
+.shop-row p {
+margin: 0;
+font-size: 11px;
+color: #d1d5db;
+}
+.buy-btn {
+background: #00b894;
+color: #ffffff;
+border: none;
+border-radius: 10px;
+padding: 8px 12px;
+font-weight: 800;
+font-size: 12px;
+cursor: pointer;
+white-space: nowrap;
+}
+.buy-btn:disabled {
+background: #4b5563;
+color: #9ca3af;
+cursor: default;
+}
