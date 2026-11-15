@@ -8,636 +8,540 @@ body {
     margin: 0;
     padding: 0;
     font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-    background: #0d0b1a;
+    background: #12101c;
     height: 100vh;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     color: #ffffff;
     overflow: hidden;
-    position: relative;
 }
 
-/* Ночная улица за окном */
-.street-scene {
-    position: fixed;
-    inset: 0;
-    background: linear-gradient(180deg, #090a1a 0%, #1b1938 52%, #2c254a 75%, #1a1829 100%);
-    z-index: 0;
-    overflow: hidden;
-}
-
-.stars {
-    position: absolute;
-    inset: 0;
-    background-image:
-        radial-gradient(2px 2px at 15% 12%, #ffffff, transparent),
-        radial-gradient(2px 2px at 32% 24%, #ffeaa7, transparent),
-        radial-gradient(1.5px 1.5px at 55% 10%, #ffffff, transparent),
-        radial-gradient(2px 2px at 78% 18%, #74b9ff, transparent),
-        radial-gradient(1.5px 1.5px at 88% 28%, #ffffff, transparent),
-        radial-gradient(2px 2px at 44% 30%, #ffffff, transparent);
-    opacity: 0.7;
-}
-
-.moon {
-    position: absolute;
-    top: 55px;
-    right: 22%;
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
-    background: #ffeaa7;
-    box-shadow: 0 0 25px rgba(255, 234, 167, 0.5);
-    opacity: 0.85;
-}
-
-.buildings {
-    position: absolute;
-    bottom: 220px;
-    left: 0;
-    right: 0;
-    height: 230px;
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-around;
-    padding: 0 2%;
-}
-
-.bld {
-    background: #141229;
-    border-top: 3px solid #2d2952;
-    position: relative;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
-}
-
-.bld::after {
-    content: '';
-    position: absolute;
-    inset: 14px 10px;
-    background-image:
-        linear-gradient(90deg, #feca57 35%, transparent 35%),
-        linear-gradient(180deg, #feca57 25%, transparent 25%);
-    background-size: 24px 32px;
-    opacity: 0.28;
-}
-
-.b1 { width: 16%; height: 170px; }
-.b2 { width: 20%; height: 220px; }
-.b3 { width: 18%; height: 150px; }
-.b4 { width: 22%; height: 205px; }
-.b5 { width: 16%; height: 180px; }
-
-.street-lamp {
-    position: absolute;
-    bottom: 220px;
-    left: 6%;
-    width: 8px;
-    height: 195px;
-    background: #2f3640;
-    border-radius: 4px;
-}
-
-.lamp-head {
-    position: absolute;
-    top: 0;
-    left: -10px;
-    width: 28px;
-    height: 10px;
-    background: #ffeaa7;
-    border-radius: 10px;
-    box-shadow: 0 0 18px #ffeaa7;
-}
-
-.lamp-glow {
-    position: absolute;
-    top: 8px;
-    left: -55px;
-    width: 118px;
-    height: 185px;
-    background: radial-gradient(ellipse at top, rgba(255, 234, 167, 0.25), transparent 75%);
-    pointer-events: none;
-}
-
-.sidewalk {
-    position: absolute;
-    bottom: 180px;
-    left: 0;
-    right: 0;
-    height: 45px;
-    background: linear-gradient(180deg, #353b48 0%, #1e272e 100%);
-    border-top: 4px solid #576574;
-}
-
-/* Рама окна фудтрака */
-.truck-frame-top {
-    height: 18px;
-    width: 100%;
-    background: repeating-linear-gradient(
-        90deg,
-        #d63031,
-        #d63031 28px,
-        #f5f6fa 28px,
-        #f5f6fa 56px
-    );
-    border-bottom: 4px solid #2d3436;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.7);
-    z-index: 20;
-}
-
+/* Шапка */
 header {
-    width: 100%;
+    background: #1b182b;
+    border-bottom: 3px solid #ff7675;
+    padding: 8px 12px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px 14px;
     z-index: 20;
 }
 
 .stats-group, .header-btns {
     display: flex;
-    gap: 8px;
+    gap: 6px;
 }
 
 .badge, .icon-btn {
-    background: rgba(19, 17, 34, 0.9);
-    border: 2px solid #ff9f43;
-    border-radius: 50px;
-    padding: 6px 14px;
+    background: #28243d;
+    border: 2px solid #fdcb6e;
+    border-radius: 20px;
+    padding: 5px 11px;
     font-weight: 800;
-    font-size: 14px;
+    font-size: 13px;
     color: #ffffff;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
 
 .icon-btn {
+    border-color: #00cec9;
     cursor: pointer;
-    border-color: #00d2d3;
 }
 
 .icon-btn:active {
     transform: scale(0.92);
 }
 
-/* Неоновая вывеска по центру */
-.center-sign-wrap {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    z-index: 15;
-    margin-top: -4px;
-}
-
-.neon-sign {
-    background: rgba(15, 12, 30, 0.85);
-    border: 3px solid #576574;
-    border-radius: 14px;
-    padding: 6px 22px;
-    font-size: 20px;
+.title-sign {
     font-weight: 900;
-    letter-spacing: 2px;
-    color: #8395a7;
-    text-transform: uppercase;
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    transition: all 0.3s ease;
-}
-
-.neon-sign.bought {
-    color: #00f2fe;
-    border-color: #ff2a85;
+    font-size: 15px;
+    letter-spacing: 1px;
+    color: #ff7675;
+    text-shadow: 0 0 10px rgba(255, 118, 117, 0.7);
     cursor: pointer;
-    text-shadow: 0 0 8px #00f2fe, 0 0 18px #00f2fe;
-    box-shadow: 0 0 18px rgba(255, 42, 133, 0.6), inset 0 0 12px rgba(0, 242, 254, 0.3);
 }
 
-.edit-hint {
-    font-size: 13px;
-    display: none;
-}
-
-.neon-sign.bought .edit-hint {
-    display: inline;
-}
-
-/* Боковая шпаргалка справа */
-.side-menu {
-    position: fixed;
-    right: 10px;
-    top: 105px;
-    width: 175px;
-    max-height: 40vh;
-    background: rgba(19, 17, 34, 0.92);
-    border: 2px solid #5f27cd;
-    border-radius: 16px;
-    padding: 8px;
-    z-index: 15;
-    display: flex;
-    flex-direction: column;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
-}
-
-.side-menu-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
-    padding-bottom: 5px;
-    margin-bottom: 6px;
-    font-size: 12px;
-    font-weight: 800;
-    color: #ff9f43;
-}
-
-.hint-tag {
-    font-size: 10px;
-    color: #00d2d3;
-}
-
-.side-recipe-list {
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-}
-
-.side-recipe-item {
-    background: rgba(255, 255, 255, 0.08);
-    border-radius: 8px;
-    padding: 4px 6px;
-    font-size: 11px;
-    font-weight: 700;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.locked-msg {
-    font-size: 11px;
-    color: #c8d6e5;
-    text-align: center;
-    padding: 12px 4px;
-    line-height: 1.3;
-}
-
-/* Очередь клиентов в полный рост */
-.queue-area {
+/* Окно выдачи и клиент */
+.window-zone {
     flex: 1;
+    background: linear-gradient(180deg, #0d0c1d 0%, #241f3d 75%, #383159 100%);
+    position: relative;
     display: flex;
     align-items: flex-end;
-    justify-content: flex-start;
-    gap: 28px;
-    padding-left: 10%;
-    padding-bottom: 0;
-    z-index: 5;
+    justify-content: center;
+    padding: 10px 12px 0;
     overflow: hidden;
 }
 
 .customer-card {
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-    position: relative;
-    transform-origin: bottom center;
+    align-items: flex-end;
+    gap: 14px;
+    transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.35s;
+    transform: translateX(-120vw);
+    opacity: 0;
 }
 
-/* Второй и третий в очереди стоят чуть дальше на улице */
-.customer-card.waiting-1 {
-    transform: scale(0.84) translateY(-14px);
-    opacity: 0.9;
-    filter: brightness(0.88);
-    z-index: 6;
-}
-
-.customer-card.waiting-2 {
-    transform: scale(0.72) translateY(-26px);
-    opacity: 0.78;
-    filter: brightness(0.75);
-    z-index: 4;
-}
-
-/* Первый гость прямо у прилавка во весь рост */
-.customer-card.active {
-    transform: scale(1) translateY(0);
+.customer-card.arrived {
+    transform: translateX(0);
     opacity: 1;
-    z-index: 10;
 }
 
-.customer-card.leaving-happy {
-    transform: translateX(120vw) scale(1.05);
+.customer-card.leave-happy {
+    transform: translateX(120vw);
     opacity: 0;
 }
 
-.customer-card.leaving-angry {
-    transform: translateX(-120vw) rotate(-10deg);
+.customer-card.leave-angry {
+    transform: translateX(-120vw);
     opacity: 0;
 }
 
-/* Фигура человека в полный рост */
-.person-fullbody {
+.customer-figure {
     display: flex;
     flex-direction: column;
     align-items: center;
-    position: relative;
-    animation: breatheBody 1.8s ease-in-out infinite;
-    filter: drop-shadow(0 8px 14px rgba(0, 0, 0, 0.65));
+    animation: idleCustomer 1.6s ease-in-out infinite;
 }
 
-@keyframes breatheBody {
+@keyframes idleCustomer {
     0%, 100% { transform: translateY(0); }
     50% { transform: translateY(3px); }
 }
 
-.person-head {
+.cust-head {
     font-size: 56px;
     line-height: 1;
-    z-index: 3;
+    z-index: 2;
     margin-bottom: -8px;
 }
 
-.person-torso {
-    width: 76px;
-    height: 78px;
-    border-radius: 26px 26px 8px 8px;
-    position: relative;
-    z-index: 2;
+.cust-body {
+    width: 74px;
+    height: 68px;
+    background: #0984e3;
+    border-radius: 24px 24px 0 0;
+    box-shadow: inset 0 -8px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* Чек заказа справа от клиента */
+.order-ticket {
+    background: #fffdf7;
+    color: #2d3436;
+    border-radius: 14px;
+    padding: 8px 12px;
+    min-width: 175px;
+    max-width: 220px;
+    margin-bottom: 14px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+    border-top: 5px solid #e17055;
+}
+
+.ticket-header {
     display: flex;
-    justify-content: center;
-    box-shadow: inset 0 -10px 15px rgba(0, 0, 0, 0.25);
-}
-
-/* Шнурки/воротник худи */
-.person-torso::before {
-    content: '';
-    width: 24px;
-    height: 14px;
-    background: rgba(0, 0, 0, 0.22);
-    border-radius: 0 0 12px 12px;
-}
-
-/* Руки */
-.person-arm-left, .person-arm-right {
-    position: absolute;
-    top: 8px;
-    width: 18px;
-    height: 64px;
-    border-radius: 12px;
-    background: inherit;
-    filter: brightness(0.92);
-}
-
-.person-arm-left {
-    left: -13px;
-    transform: rotate(8deg);
-}
-
-.person-arm-right {
-    right: -13px;
-    transform: rotate(-8deg);
-}
-
-/* Ноги / джинсы уходят за прилавок */
-.person-legs {
-    display: flex;
-    gap: 8px;
-    margin-top: -2px;
-    z-index: 1;
-}
-
-.person-leg {
-    width: 28px;
-    height: 55px;
-    background: #2c3e50;
-    border-radius: 4px 4px 0 0;
-    box-shadow: inset 0 6px 10px rgba(0, 0, 0, 0.4);
-}
-
-/* Облачко заказа над головой */
-.order-bubble {
-    background: #ffffff;
-    color: #222f3e;
-    border-radius: 18px;
-    padding: 6px 12px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.45);
-    position: relative;
-    text-align: center;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 900;
+    font-size: 13px;
     margin-bottom: 6px;
-    border: 3px solid #ff9f43;
-    min-width: 110px;
-    animation: floatBubble 2s ease-in-out infinite;
-    z-index: 12;
+    border-bottom: 1px dashed #b2bec3;
+    padding-bottom: 4px;
 }
 
-.customer-card.waiting-1 .order-bubble,
-.customer-card.waiting-2 .order-bubble {
-    border-color: #8395a7;
-    padding: 4px 8px;
-    min-width: 68px;
-    animation: none;
+.ticket-price {
+    color: #00b894;
 }
 
-.order-bubble::after {
-    content: '';
-    position: absolute;
-    bottom: -10px;
-    left: 50%;
-    transform: translateX(-50%);
-    border-width: 10px 8px 0;
-    border-style: solid;
-    border-color: #ff9f43 transparent transparent transparent;
+.ticket-ings {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-bottom: 8px;
 }
 
-.customer-card.waiting-1 .order-bubble::after,
-.customer-card.waiting-2 .order-bubble::after {
-    border-color: #8395a7 transparent transparent transparent;
-}
-
-@keyframes floatBubble {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-4px); }
-}
-
-.order-dish {
-    font-size: 32px;
-    line-height: 1.1;
-}
-
-.customer-card.waiting-1 .order-dish,
-.customer-card.waiting-2 .order-dish {
-    font-size: 24px;
-}
-
-.order-name {
+.ticket-chip {
+    background: #ffeaa7;
+    border-radius: 8px;
+    padding: 3px 6px;
     font-size: 12px;
     font-weight: 800;
+    display: flex;
+    align-items: center;
+    gap: 3px;
 }
 
-.patience-bar-bg {
+.ticket-chip.done {
+    background: #55efc4;
+    text-decoration: line-through;
+    opacity: 0.7;
+}
+
+.patience-track {
     width: 100%;
     height: 6px;
     background: #dfe6e9;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.patience-fill {
+    height: 100%;
+    width: 100%;
+    background: #00b894;
+    transition: width 0.2s linear, background-color 0.3s;
+}
+
+/* Рабочая зона кухни */
+.kitchen-table {
+    background: linear-gradient(180deg, #4b5563 0%, #1f2937 100%);
+    border-top: 5px solid #9ca3af;
+    padding: 8px 10px 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 15;
+}
+
+#toast-msg {
+    font-size: 12px;
+    font-weight: 800;
+    color: #ffeaa7;
+    min-height: 18px;
+    margin-bottom: 6px;
+    text-align: center;
+}
+
+.stations-row {
+    display: grid;
+    grid-template-columns: 1fr 1.6fr 1fr;
+    gap: 8px;
+    width: 100%;
+    max-width: 680px;
+    margin-bottom: 10px;
+}
+
+.station {
+    background: rgba(17, 24, 39, 0.75);
+    border: 2px solid #6b7280;
+    border-radius: 14px;
+    padding: 6px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 145px;
+}
+
+.spit-station, .grill-station {
+    cursor: pointer;
+}
+
+.spit-station:active, .grill-station:active {
+    transform: scale(0.96);
+}
+
+.station-label {
+    font-size: 11px;
+    font-weight: 800;
+    color: #d1d5db;
+    text-align: center;
+}
+
+.station-hint {
+    font-size: 10px;
+    font-weight: 800;
+    color: #fdcb6e;
+    text-align: center;
+}
+
+/* Вертел с мясом */
+.spit-visual {
+    position: relative;
+    width: 54px;
+    height: 82px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.spit-rod {
+    width: 6px;
+    height: 100%;
+    background: #d1d5db;
+    border-radius: 4px;
+}
+
+.spit-meat {
+    position: absolute;
+    width: 44px;
+    height: 64px;
+    background: repeating-linear-gradient(
+        0deg,
+        #b33939,
+        #b33939 8px,
+        #cd6133 8px,
+        #cd6133 14px
+    );
+    border-radius: 18px 18px 10px 10px;
+    box-shadow: inset -6px 0 10px rgba(0, 0, 0, 0.45);
+    transition: width 0.25s, opacity 0.25s;
+    animation: spinMeat 2.5s linear infinite;
+}
+
+@keyframes spinMeat {
+    0%, 100% { transform: scaleX(1); }
+    50% { transform: scaleX(0.9); }
+}
+
+.spit-meat.empty {
+    width: 8px;
+    opacity: 0.2;
+}
+
+/* Доска и послойный лаваш */
+.lavash-wrap {
+    width: 100%;
+    height: 76px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.lavash-sheet {
+    width: 92%;
+    height: 66px;
+    background: #f7d794;
+    border: 2px dashed #e1b12c;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    box-shadow: inset 0 0 10px rgba(180, 120, 40, 0.35);
+}
+
+.layers-stack {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    padding: 4px;
+}
+
+.layer-item {
+    font-size: 20px;
+    animation: dropLayer 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes dropLayer {
+    0% { transform: scale(1.7) translateY(-15px); opacity: 0; }
+    100% { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+.wrapped-shawarma {
+    display: none;
+    font-size: 52px;
+    animation: dropLayer 0.25s ease-out;
+}
+
+.lavash-wrap.is-wrapped .lavash-sheet {
+    display: none;
+}
+
+.lavash-wrap.is-wrapped .wrapped-shawarma {
+    display: block;
+}
+
+.board-actions {
+    display: flex;
+    gap: 6px;
+    width: 100%;
+}
+
+.action-btn {
+    border: none;
+    border-radius: 8px;
+    padding: 5px 8px;
+    font-weight: 800;
+    font-size: 11px;
+    cursor: pointer;
+}
+
+.clear-btn {
+    background: #636e72;
+    color: #ffffff;
+}
+
+.wrap-btn {
+    flex: 1;
+    background: #00b894;
+    color: #ffffff;
+}
+
+.wrap-btn:active {
+    transform: scale(0.94);
+}
+
+/* Контактный гриль */
+.grill-visual {
+    width: 68px;
+    height: 64px;
+    background: #2d3436;
+    border: 3px solid #636e72;
     border-radius: 10px;
-    margin-top: 4px;
-overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
 }
-.patience-bar-fill {
-height: 100%;
-width: 100%;
-background: #1dd1a1;
-transition: width 0.2s linear, background-color 0.3s;
+
+.grill-lines {
+    position: absolute;
+    inset: 4px;
+    background: repeating-linear-gradient(
+        90deg,
+        transparent,
+        transparent 6px,
+        #1e272e 6px,
+        #1e272e 10px
+    );
 }
-/* Широкий прилавок фудтрака */
-.truck-counter {
-background: linear-gradient(180deg, #3d3d3d 0%, #1e272e 100%);
-width: 100%;
-padding: 0 14px 16px;
-box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.75);
-display: flex;
-flex-direction: column;
-align-items: center;
-z-index: 15;
-position: relative;
+
+.grill-item {
+    font-size: 40px;
+    z-index: 2;
+    display: none;
 }
-.counter-top-edge {
-width: calc(100% + 28px);
-height: 12px;
-background: linear-gradient(90deg, #b2bec3, #dfe6e9, #b2bec3);
-border-bottom: 3px solid #636e72;
-margin-bottom: 8px;
+
+.grill-visual.cooking .grill-item {
+    display: block;
+    animation: sizzle 0.25s infinite alternate;
 }
-#status-msg {
-font-size: 13px;
-font-weight: 800;
-color: #feca57;
-min-height: 18px;
-margin-bottom: 8px;
-text-align: center;
+
+.grill-visual.burned .grill-item {
+    display: block;
+    filter: grayscale(100%) brightness(0.3);
 }
-.cooking-row {
-display: flex;
-align-items: center;
-justify-content: center;
-gap: 12px;
-margin-bottom: 10px;
-width: 100%;
-max-width: 550px;
+
+@keyframes sizzle {
+    from { transform: translateX(-1px) rotate(-2deg); }
+    to { transform: translateX(1px) rotate(2deg); }
 }
-.plus-sign {
-font-size: 22px;
-font-weight: 900;
-color: #ff9f43;
+
+.grill-meter {
+    width: 100%;
+    height: 8px;
+    background: #374151;
+    border-radius: 6px;
+    position: relative;
+    overflow: hidden;
+    margin: 4px 0;
 }
-.slot {
-width: 60px;
-height: 60px;
-background: rgba(255, 255, 255, 0.1);
-border: 2px dashed #b2bec3;
-border-radius: 16px;
-display: flex;
-align-items: center;
-justify-content: center;
-font-size: 32px;
-cursor: pointer;
+
+.grill-zone-perfect {
+    position: absolute;
+    left: 60%;
+    width: 28%;
+    height: 100%;
+    background: rgba(0, 184, 148, 0.45);
+    border-left: 1px solid #00b894;
+    border-right: 1px solid #00b894;
 }
-.slot.filled {
-border-style: solid;
-border-color: #ff9f43;
-background: rgba(255, 255, 255, 0.2);
-animation: popIn 0.2s ease-out;
+
+.grill-progress {
+    height: 100%;
+    width: 0%;
+    background: #fdcb6e;
+    transition: width 0.1s linear;
 }
-@keyframes popIn {
-0% { transform: scale(0.6); }
-100% { transform: scale(1); }
+
+/* Лоток ингредиентов */
+.ingredients-tray {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+    width: 100%;
+    max-width: 680px;
 }
-.cook-btn {
-background: linear-gradient(45deg, #ff9f43, #ee5253);
-color: #ffffff;
-border: none;
-border-radius: 16px;
-height: 60px;
-padding: 0 24px;
-font-family: inherit;
-font-size: 15px;
-font-weight: 800;
-cursor: pointer;
-box-shadow: 0 4px 15px rgba(238, 82, 83, 0.4);
+
+.ing-card {
+    background: #374151;
+    border: 2px solid #6b7280;
+    border-radius: 12px;
+    padding: 6px 4px;
+    text-align: center;
+    cursor: pointer;
 }
-.cook-btn:active {
-transform: scale(0.94);
+
+.ing-card:active {
+    transform: scale(0.92);
+    border-color: #fdcb6e;
 }
-/* Полка с ингредиентами */
-.ingredients-dock {
-display: grid;
-grid-template-columns: repeat(5, 1fr);
-gap: 7px;
-width: 100%;
-max-width: 750px;
+
+.ing-card.locked {
+    opacity: 0.4;
+    cursor: default;
 }
-.ing-btn {
-background: #2f3640;
-border: 2px solid #576574;
-border-radius: 12px;
-padding: 6px 4px;
-text-align: center;
-cursor: pointer;
-transition: border-color 0.15s;
-}
-.ing-btn:hover {
-border-color: #00d2d3;
-}
-.ing-btn:active {
-transform: scale(0.92);
-border-color: #ff9f43;
-}
+
 .ing-emoji {
-font-size: 24px;
-display: block;
+    font-size: 22px;
+    display: block;
 }
-.ing-name {
-font-size: 11px;
-font-weight: 700;
-color: #f5f6fa;
-display: block;
-margin-top: 2px;
+
+.ing-title {
+    font-size: 11px;
+    font-weight: 700;
+    display: block;
+    margin-top: 2px;
 }
-.floating-fx {
-position: fixed;
-font-weight: 900;
-font-size: 24px;
-pointer-events: none;
-z-index: 100;
-animation: flyUp 1s ease-out forwards;
-text-shadow: 0 2px 6px rgba(0, 0, 0, 0.8);
+
+/* Всплывающие бонусы */
+.float-score {
+    position: fixed;
+    left: 50%;
+    top: 38%;
+    transform: translateX(-50%);
+    font-size: 26px;
+    font-weight: 900;
+    pointer-events: none;
+    z-index: 100;
+    animation: floatUp 0.9s ease-out forwards;
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.8);
 }
-@keyframes flyUp {
-0% { opacity: 1; transform: translate(-50%, 0) scale(0.8); }
-100% { opacity: 0; transform: translate(-50%, -70px) scale(1.2); }
+
+@keyframes floatUp {
+    0% { opacity: 1; transform: translate(-50%, 0) scale(0.8); }
+    100% { opacity: 0; transform: translate(-50%, -65px) scale(1.2); }
 }
-/* Магазин улучшений */
+
+/* Модалка магазина */
 .modal-overlay {
-position: fixed;
-inset: 0;
-background: rgba(10, 8, 25, 0.82);
-display: none;
-align-items: center;
-justify-content: center;
-z-index: 50;
-padding: 15px;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.82);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 50;
+    padding: 15px;
 }
+
 .modal-overlay.open {
-display: flex;
+    display: flex;
 }
+
 .modal-card {
-background: #1e272e;
-border: 2px solid #00d2d3;
-border-radius: 22px;
+    background: #1f2937;
+    border: 2px solid #00cec9;
+border-radius: 20px;
 width: 100%;
-max-width: 460px;
-max-height: 82vh;
-padding: 18px;
+max-width: 440px;
+max-height: 80vh;
+padding: 16px;
 display: flex;
 flex-direction: column;
 }
@@ -650,15 +554,15 @@ margin-bottom: 12px;
 .modal-header h2 {
 margin: 0;
 font-size: 18px;
-color: #feca57;
+color: #fdcb6e;
 }
 .close-btn {
-background: #ee5253;
+background: #ff7675;
 color: #ffffff;
 border: none;
 border-radius: 50%;
-width: 30px;
-height: 30px;
+width: 28px;
+height: 28px;
 font-weight: bold;
 cursor: pointer;
 }
@@ -666,32 +570,31 @@ cursor: pointer;
 overflow-y: auto;
 display: flex;
 flex-direction: column;
-gap: 10px;
+gap: 8px;
 }
-.shop-item {
+.shop-row {
 background: rgba(255, 255, 255, 0.07);
-border-radius: 14px;
-padding: 10px 12px;
+border-radius: 12px;
+padding: 10px;
 display: flex;
 justify-content: space-between;
 align-items: center;
 gap: 10px;
 }
-.shop-info h3 {
+.shop-row h3 {
 margin: 0 0 3px 0;
 font-size: 14px;
-color: #ffffff;
 }
-.shop-info p {
+.shop-row p {
 margin: 0;
 font-size: 11px;
-color: #c8d6e5;
+color: #d1d5db;
 }
 .buy-btn {
-background: #1dd1a1;
-color: #141124;
+background: #00b894;
+color: #ffffff;
 border: none;
-border-radius: 12px;
+border-radius: 10px;
 padding: 8px 12px;
 font-weight: 800;
 font-size: 12px;
@@ -699,7 +602,7 @@ cursor: pointer;
 white-space: nowrap;
 }
 .buy-btn:disabled {
-background: #576574;
-color: #c8d6e5;
+background: #4b5563;
+color: #9ca3af;
 cursor: default;
 }
