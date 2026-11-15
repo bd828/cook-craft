@@ -3,54 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Кафе Шеф-Алхимик</title>
+    <title>Ночной Фудтрак</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://yandex.ru"></script>
 </head>
 <body>
 
+    <div class="street-bg">
+        <div class="neon-sign" id="neon-decor">STREET FOOD</div>
+        <div class="city-skyline"></div>
+    </div>
+
+    <div class="truck-awning"></div>
+
     <header>
-        <div class="stats-badge">💰 <span id="coins">0</span></div>
+        <div class="stats-group">
+            <div class="badge">💰 <span id="coins">0</span></div>
+            <div class="badge">⭐ Ур. <span id="level">1</span></div>
+        </div>
         <div class="header-btns">
-            <button class="icon-btn" id="open-menu-btn">📖 Меню</button>
+            <button class="icon-btn" id="shop-btn">🛠️ Улучшения</button>
             <button class="icon-btn" id="music-btn">🎵 Выкл</button>
         </div>
     </header>
 
-    <div class="customer-area">
+    <aside class="side-menu" id="side-menu">
+        <div class="side-menu-header">
+            <span>📋 Шпаргалка</span>
+            <span class="hint-tag" id="hint-status">До 10 ур.</span>
+        </div>
+        <div class="side-recipe-list" id="side-recipe-list"></div>
+    </aside>
+
+    <main class="window-area">
         <div class="customer-wrapper" id="customer-box">
             <div class="order-bubble">
-                <div class="order-dish" id="order-emoji">🥞</div>
-                <div class="order-name" id="order-name">Блинчики</div>
+                <div class="order-dish" id="order-emoji">🌭</div>
+                <div class="order-name" id="order-name">Хот-дог</div>
                 <div class="patience-bar-bg">
                     <div class="patience-bar-fill" id="patience-fill"></div>
                 </div>
             </div>
             <div class="customer-avatar" id="customer-avatar">🧑</div>
         </div>
-    </div>
+    </main>
 
-    <div class="counter-zone">
-        <div id="status-msg">Соберите заказ посетителя!</div>
+    <section class="truck-counter">
+        <div id="status-msg">Гость у окна! Соберите заказ</div>
         <div class="cooking-row">
             <div class="slot" id="slot-0"></div>
             <div class="plus-sign">+</div>
             <div class="slot" id="slot-1"></div>
-            <button class="cook-btn" id="serve-btn">Подать! 🍽️</button>
+            <button class="cook-btn" id="serve-btn">Выдать 🛎️</button>
         </div>
         <div class="ingredients-dock" id="ingredients-dock"></div>
-    </div>
+    </section>
 
-    <div class="modal-overlay" id="menu-modal">
+    <div class="modal-overlay" id="shop-modal">
         <div class="modal-card">
             <div class="modal-header">
-                <h2>📖 Книга рецептов</h2>
-                <button class="close-btn" id="close-menu-btn">✕</button>
+                <h2>🛠️ Прокачка фудтрака</h2>
+                <button class="close-btn" id="close-shop-btn">✕</button>
             </div>
-            <div class="recipe-list" id="recipe-list"></div>
+            <div class="shop-list" id="shop-list"></div>
         </div>
     </div>
 
     <script src="game.js"></script>
 </body>
 </html>
+
