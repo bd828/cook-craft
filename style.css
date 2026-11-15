@@ -91,7 +91,7 @@ body {
 .street-lamp {
     position: absolute;
     bottom: 220px;
-    left: 8%;
+    left: 6%;
     width: 8px;
     height: 195px;
     background: #2f3640;
@@ -282,66 +282,160 @@ header {
     line-height: 1.3;
 }
 
-/* Очередь клиентов у окна */
+/* Очередь клиентов в полный рост */
 .queue-area {
     flex: 1;
     display: flex;
     align-items: flex-end;
     justify-content: flex-start;
-    gap: 24px;
-    padding-left: 12%;
-    padding-bottom: 6px;
+    gap: 28px;
+    padding-left: 10%;
+    padding-bottom: 0;
     z-index: 5;
+    overflow: hidden;
 }
 
 .customer-card {
     display: flex;
     flex-direction: column;
     align-items: center;
-    transition: all 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
     position: relative;
+    transform-origin: bottom center;
 }
 
-.customer-card.waiting {
-    transform: scale(0.84);
-    opacity: 0.85;
-    filter: brightness(0.85);
+/* Второй и третий в очереди стоят чуть дальше на улице */
+.customer-card.waiting-1 {
+    transform: scale(0.84) translateY(-14px);
+    opacity: 0.9;
+    filter: brightness(0.88);
+    z-index: 6;
 }
 
+.customer-card.waiting-2 {
+    transform: scale(0.72) translateY(-26px);
+    opacity: 0.78;
+    filter: brightness(0.75);
+    z-index: 4;
+}
+
+/* Первый гость прямо у прилавка во весь рост */
 .customer-card.active {
-    transform: scale(1.04);
+    transform: scale(1) translateY(0);
     opacity: 1;
-    z-index: 8;
+    z-index: 10;
 }
 
 .customer-card.leaving-happy {
-    transform: translateX(120vw) scale(1.1);
+    transform: translateX(120vw) scale(1.05);
     opacity: 0;
 }
 
 .customer-card.leaving-angry {
-    transform: translateX(-120vw) rotate(-15deg);
+    transform: translateX(-120vw) rotate(-10deg);
     opacity: 0;
 }
 
+/* Фигура человека в полный рост */
+.person-fullbody {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    animation: breatheBody 1.8s ease-in-out infinite;
+    filter: drop-shadow(0 8px 14px rgba(0, 0, 0, 0.65));
+}
+
+@keyframes breatheBody {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(3px); }
+}
+
+.person-head {
+    font-size: 56px;
+    line-height: 1;
+    z-index: 3;
+    margin-bottom: -8px;
+}
+
+.person-torso {
+    width: 76px;
+    height: 78px;
+    border-radius: 26px 26px 8px 8px;
+    position: relative;
+    z-index: 2;
+    display: flex;
+    justify-content: center;
+    box-shadow: inset 0 -10px 15px rgba(0, 0, 0, 0.25);
+}
+
+/* Шнурки/воротник худи */
+.person-torso::before {
+    content: '';
+    width: 24px;
+    height: 14px;
+    background: rgba(0, 0, 0, 0.22);
+    border-radius: 0 0 12px 12px;
+}
+
+/* Руки */
+.person-arm-left, .person-arm-right {
+    position: absolute;
+    top: 8px;
+    width: 18px;
+    height: 64px;
+    border-radius: 12px;
+    background: inherit;
+    filter: brightness(0.92);
+}
+
+.person-arm-left {
+    left: -13px;
+    transform: rotate(8deg);
+}
+
+.person-arm-right {
+    right: -13px;
+    transform: rotate(-8deg);
+}
+
+/* Ноги / джинсы уходят за прилавок */
+.person-legs {
+    display: flex;
+    gap: 8px;
+    margin-top: -2px;
+    z-index: 1;
+}
+
+.person-leg {
+    width: 28px;
+    height: 55px;
+    background: #2c3e50;
+    border-radius: 4px 4px 0 0;
+    box-shadow: inset 0 6px 10px rgba(0, 0, 0, 0.4);
+}
+
+/* Облачко заказа над головой */
 .order-bubble {
     background: #ffffff;
     color: #222f3e;
     border-radius: 18px;
-    padding: 7px 12px;
+    padding: 6px 12px;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.45);
     position: relative;
     text-align: center;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
     border: 3px solid #ff9f43;
     min-width: 110px;
     animation: floatBubble 2s ease-in-out infinite;
+    z-index: 12;
 }
 
-.customer-card.waiting .order-bubble {
+.customer-card.waiting-1 .order-bubble,
+.customer-card.waiting-2 .order-bubble {
     border-color: #8395a7;
-    padding: 5px 10px;
-    min-width: 80px;
+    padding: 4px 8px;
+    min-width: 68px;
     animation: none;
 }
 
@@ -356,7 +450,8 @@ header {
     border-color: #ff9f43 transparent transparent transparent;
 }
 
-.customer-card.waiting .order-bubble::after {
+.customer-card.waiting-1 .order-bubble::after,
+.customer-card.waiting-2 .order-bubble::after {
     border-color: #8395a7 transparent transparent transparent;
 }
 
@@ -366,12 +461,13 @@ header {
 }
 
 .order-dish {
-    font-size: 34px;
+    font-size: 32px;
     line-height: 1.1;
 }
 
-.customer-card.waiting .order-dish {
-    font-size: 26px;
+.customer-card.waiting-1 .order-dish,
+.customer-card.waiting-2 .order-dish {
+    font-size: 24px;
 }
 
 .order-name {
@@ -384,107 +480,85 @@ header {
     height: 6px;
     background: #dfe6e9;
     border-radius: 10px;
-    margin-top: 5px;
-    overflow: hidden;
+    margin-top: 4px;
+overflow: hidden;
 }
-
 .patience-bar-fill {
-    height: 100%;
-    width: 100%;
-    background: #1dd1a1;
-    transition: width 0.2s linear, background-color 0.3s;
+height: 100%;
+width: 100%;
+background: #1dd1a1;
+transition: width 0.2s linear, background-color 0.3s;
 }
-
-.customer-avatar {
-    font-size: 76px;
-    line-height: 1;
-    filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.6));
-    animation: idleBounce 1.5s ease-in-out infinite;
-}
-
-@keyframes idleBounce {
-    0%, 100% { transform: scaleY(1); }
-    50% { transform: scaleY(0.95) translateY(3px); }
-}
-
 /* Широкий прилавок фудтрака */
 .truck-counter {
-    background: linear-gradient(180deg, #3d3d3d 0%, #1e272e 100%);
-    width: 100%;
-    padding: 0 14px 16px;
-    box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.7);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    z-index: 15;
-    position: relative;
+background: linear-gradient(180deg, #3d3d3d 0%, #1e272e 100%);
+width: 100%;
+padding: 0 14px 16px;
+box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.75);
+display: flex;
+flex-direction: column;
+align-items: center;
+z-index: 15;
+position: relative;
 }
-
 .counter-top-edge {
-    width: calc(100% + 28px);
-    height: 12px;
-    background: linear-gradient(90deg, #b2bec3, #dfe6e9, #b2bec3);
-    border-bottom: 3px solid #636e72;
-    margin-bottom: 8px;
+width: calc(100% + 28px);
+height: 12px;
+background: linear-gradient(90deg, #b2bec3, #dfe6e9, #b2bec3);
+border-bottom: 3px solid #636e72;
+margin-bottom: 8px;
 }
-
 #status-msg {
-    font-size: 13px;
-    font-weight: 800;
-    color: #feca57;
-    min-height: 18px;
-    margin-bottom: 8px;
-    text-align: center;
+font-size: 13px;
+font-weight: 800;
+color: #feca57;
+min-height: 18px;
+margin-bottom: 8px;
+text-align: center;
 }
-
 .cooking-row {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    margin-bottom: 10px;
-    width: 100%;
-    max-width: 550px;
+display: flex;
+align-items: center;
+justify-content: center;
+gap: 12px;
+margin-bottom: 10px;
+width: 100%;
+max-width: 550px;
 }
-
 .plus-sign {
-    font-size: 22px;
-    font-weight: 900;
-    color: #ff9f43;
+font-size: 22px;
+font-weight: 900;
+color: #ff9f43;
 }
-
 .slot {
-    width: 60px;
-    height: 60px;
-    background: rgba(255, 255, 255, 0.1);
-    border: 2px dashed #b2bec3;
-    border-radius: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 32px;
-    cursor: pointer;
+width: 60px;
+height: 60px;
+background: rgba(255, 255, 255, 0.1);
+border: 2px dashed #b2bec3;
+border-radius: 16px;
+display: flex;
+align-items: center;
+justify-content: center;
+font-size: 32px;
+cursor: pointer;
 }
-
 .slot.filled {
-    border-style: solid;
-    border-color: #ff9f43;
-    background: rgba(255, 255, 255, 0.2);
-    animation: popIn 0.2s ease-out;
+border-style: solid;
+border-color: #ff9f43;
+background: rgba(255, 255, 255, 0.2);
+animation: popIn 0.2s ease-out;
 }
-
 @keyframes popIn {
-    0% { transform: scale(0.6); }
-    100% { transform: scale(1); }
+0% { transform: scale(0.6); }
+100% { transform: scale(1); }
 }
-
 .cook-btn {
-    background: linear-gradient(45deg, #ff9f43, #ee5253);
-    color: #ffffff;
-    border: none;
-    border-radius: 16px;
-    height: 60px;
-    padding: 0 24px;
+background: linear-gradient(45deg, #ff9f43, #ee5253);
+color: #ffffff;
+border: none;
+border-radius: 16px;
+height: 60px;
+padding: 0 24px;
 font-family: inherit;
 font-size: 15px;
 font-weight: 800;
