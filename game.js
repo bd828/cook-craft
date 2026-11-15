@@ -32,11 +32,11 @@ let gameLoop = null;
 let isTransitioning = false;
 
 if (window.YaGames) {
-    YaGames.init().then(ysdk => {
+    YaGames.init().then(function(ysdk) {
         if (ysdk.features && ysdk.features.LoadingAPI) {
             ysdk.features.LoadingAPI.ready();
         }
-    }).catch(() => {});
+    }).catch(function() {});
 }
 
 let audioCtx = null;
@@ -76,7 +76,7 @@ document.getElementById('music-btn').addEventListener('click', function() {
     } else {
         isMusicOn = true;
         this.textContent = '🎵 Вкл';
-        musicTimer = setInterval(() => {
+        musicTimer = setInterval(function() {
             playTone(notes[step], 0.35, 'triangle', 0.04);
             step = (step + 1) % notes.length;
         }, 420);
@@ -91,36 +91,36 @@ function spawnEffect(text, color) {
     el.style.left = '50%';
     el.style.top = '45%';
     document.body.appendChild(el);
-    setTimeout(() => el.remove(), 1000);
+    setTimeout(function() { el.remove(); }, 1000);
 }
 
 function initUI() {
     document.getElementById('coins').textContent = coins;
 
     const dock = document.getElementById('ingredients-dock');
-    ingredients.forEach(ing => {
+    ingredients.forEach(function(ing) {
         const btn = document.createElement('div');
         btn.className = 'ing-btn';
         btn.innerHTML = '<span class="ing-emoji">' + ing.emoji + '</span><span class="ing-name">' + ing.name + '</span>';
-        btn.addEventListener('click', () => addIng(ing));
+        btn.addEventListener('click', function() { addIng(ing); });
         dock.appendChild(btn);
     });
 
     const list = document.getElementById('recipe-list');
-    recipes.forEach(r => {
-        const i1 = ingredients.find(i => i.id === r.item1);
-        const i2 = ingredients.find(i => i.id === r.item2);
+    recipes.forEach(function(r) {
+        const i1 = ingredients.find(function(i) { return i.id === r.item1; });
+        const i2 = ingredients.find(function(i) { return i.id === r.item2; });
         const row = document.createElement('div');
         row.className = 'recipe-row';
         row.innerHTML = '<span>' + i1.emoji + ' ' + i1.name + ' + ' + i2.emoji + ' ' + i2.name + '</span><span>➔ ' + r.emoji + ' ' + r.name + ' (+' + r.price + '💰)</span>';
         list.appendChild(row);
     });
 
-    document.getElementById('slot-0').addEventListener('click', () => removeIng(0));
-    document.getElementById('slot-1').addEventListener('click', () => removeIng(1));
+    document.getElementById('slot-0').addEventListener('click', function() { removeIng(0); });
+    document.getElementById('slot-1').addEventListener('click', function() { removeIng(1); });
     document.getElementById('serve-btn').addEventListener('click', serveDish);
-    document.getElementById('open-menu-btn').addEventListener('click', () => toggleMenu(true));
-    document.getElementById('close-menu-btn').addEventListener('click', () => toggleMenu(false));
+    document.getElementById('open-menu-btn').addEventListener('click', function() { toggleMenu(true); });
+    document.getElementById('close-menu-btn').addEventListener('click', function() { toggleMenu(false); });
     document.getElementById('menu-modal').addEventListener('click', function(e) {
         if (e.target === this) toggleMenu(false);
     });
@@ -143,7 +143,7 @@ function addIng(ing) {
 }
 
 function removeIng(idx) {
-    if (selected[idx]) {
+    if (selected.at(idx)) {
         initAudio();
         selected.splice(idx, 1);
         playTone(320, 0.08, 'sine', 0.1);
@@ -154,8 +154,9 @@ function removeIng(idx) {
 function updateSlots() {
     for (let i = 0; i < 2; i++) {
         const slot = document.getElementById('slot-' + i);
-        if (selected[i]) {
-            slot.textContent = selected[i].emoji;
+        const item = selected.at(i);
+        if (item) {
+            slot.textContent = item.emoji;
             slot.classList.add('filled');
         } else {
             slot.textContent = '';
@@ -169,8 +170,8 @@ function nextCustomer() {
     const box = document.getElementById('customer-box');
     box.className = 'customer-wrapper';
 
-    currentOrder = recipes[Math.floor(Math.random() * recipes.length)];
-    const avatar = avatars[Math.floor(Math.random() * avatars.length)];
+    currentOrder = recipes.at(Math.floor(Math.random() * recipes.length));
+    const avatar = avatars.at(Math.floor(Math.random() * avatars.length));
 
     document.getElementById('customer-avatar').textContent = avatar;
     document.getElementById('order-emoji').textContent = currentOrder.emoji;
@@ -179,13 +180,13 @@ function nextCustomer() {
     patience = 100;
     updatePatienceBar();
 
-    setTimeout(() => {
+    setTimeout(function() {
         box.classList.add('arrived');
         playTone(440, 0.1, 'sine', 0.05);
     }, 50);
 
     clearInterval(gameLoop);
-    gameLoop = setInterval(() => {
+    gameLoop = setInterval(function() {
         if (document.getElementById('menu-modal').classList.contains('open')) return;
         patience -= 0.7;
         updatePatienceBar();
@@ -224,8 +225,8 @@ function customerLeave(isHappy) {
         spawnEffect('+' + total + ' 💰', '#27ae60');
 
         playTone(523.25, 0.12, 'sine', 0.1);
-        setTimeout(() => playTone(659.25, 0.12, 'sine', 0.1), 90);
-        setTimeout(() => playTone(783.99, 0.25, 'sine', 0.1), 180);
+        setTimeout(function() { playTone(659.25, 0.12, 'sine', 0.1); }, 90);
+        setTimeout(function() { playTone(783.99, 0.25, 'sine', 0.1); }, 180);
     } else {
         box.classList.remove('arrived');
         box.classList.add('leaving-angry');
@@ -250,13 +251,13 @@ function serveDish() {
         return;
     }
 
-    const firstId = selected.id;
-    const secondId = selected.id;
+    const firstId = selected.at(0).id;
+    const secondId = selected.at(1).id;
 
-    const cooked = recipes.find(r =>
-        (r.item1 === firstId && r.item2 === secondId) ||
-        (r.item1 === secondId && r.item2 === firstId)
-    );
+    const cooked = recipes.find(function(r) {
+        return (r.item1 === firstId && r.item2 === secondId) ||
+               (r.item1 === secondId && r.item2 === firstId);
+    });
 
     if (!cooked) {
         msg.textContent = 'Такого блюда нет в меню! Смотрите 📖 Меню';
