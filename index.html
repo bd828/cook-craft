@@ -3,12 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Шеф-Алхимик</title>
-    <!-- Подключение SDK Яндекс Игр -->
+    <title>Кафе Шеф-Алхимик</title>
     <script src="https://yandex.ru"></script>
     <style>
-        @import url('https://googleapis.com');
-
         * {
             box-sizing: border-box;
             user-select: none;
@@ -18,316 +15,500 @@
         body {
             margin: 0;
             padding: 0;
-            font-family: 'Nunito', 'Segoe UI', Tahoma, sans-serif;
-            /* Красивый теплый градиентный фон */
-            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #f6d365 100%);
-            min-height: 100vh;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: linear-gradient(180deg, #ffecd2 0%, #fcb69f 100%);
+            height: 100vh;
             display: flex;
             flex-direction: column;
-            align-items: center;
+            justify-content: space-between;
             color: #4a2c2a;
-            overflow-x: hidden;
+            overflow: hidden;
         }
 
         header {
             width: 100%;
             max-width: 600px;
+            margin: 0 auto;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 15px 20px;
+            padding: 12px 15px;
+            z-index: 10;
         }
 
-        h1 {
-            margin: 0;
-            font-size: 26px;
-            font-weight: 800;
-            text-shadow: 1px 1px 2px rgba(255,255,255,0.7);
-        }
-
-        .music-btn {
-            background: rgba(255, 255, 255, 0.8);
+        .stats-badge {
+            background: #ffffff;
             border: 2px solid #ff758c;
             border-radius: 50px;
-            padding: 8px 15px;
-            font-family: inherit;
+            padding: 6px 14px;
+            font-weight: 800;
+            font-size: 16px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .header-btns {
+            display: flex;
+            gap: 8px;
+        }
+
+        .icon-btn {
+            background: #ffffff;
+            border: 2px solid #ff758c;
+            border-radius: 50px;
+            padding: 6px 12px;
             font-weight: 800;
             font-size: 14px;
             color: #4a2c2a;
             cursor: pointer;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            transition: transform 0.1s;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
         }
 
-        .music-btn:active {
-            transform: scale(0.95);
+        .icon-btn:active {
+            transform: scale(0.92);
         }
 
-        /* Зона готовки (котел/стол) */
-        .cooking-zone {
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(10px);
-            border-radius: 25px;
-            padding: 20px;
-            width: 90%;
-            max-width: 500px;
-            text-align: center;
-            box-shadow: 0 10px 25px rgba(74, 44, 42, 0.15);
-            margin-bottom: 20px;
-        }
-
-        .slots {
+        .customer-area {
+            flex: 1;
             display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin: 15px 0;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            position: relative;
+            padding-bottom: 10px;
         }
 
-        .slot {
-            width: 75px;
-            height: 75px;
-            background: #fff5f5;
-            border: 3px dashed #ff758c;
-            border-radius: 20px;
+        .customer-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s;
+            transform: translateX(-150vw);
+            opacity: 0;
+        }
+
+        .customer-wrapper.arrived {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        .customer-wrapper.leaving-happy {
+            transform: translateX(150vw) scale(1.1);
+            opacity: 0;
+        }
+
+        .customer-wrapper.leaving-angry {
+            transform: translateX(-150vw) rotate(-15deg);
+            opacity: 0;
+        }
+
+        .order-bubble {
+            background: #ffffff;
+            border-radius: 22px;
+            padding: 10px 18px;
+            box-shadow: 0 8px 20px rgba(74, 44, 42, 0.18);
+            position: relative;
+            text-align: center;
+            margin-bottom: 10px;
+            border: 3px solid #ff9a9e;
+            min-width: 140px;
+            animation: floatBubble 2s ease-in-out infinite;
+        }
+
+        .order-bubble::after {
+            content: '';
+            position: absolute;
+            bottom: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 12px 10px 0;
+            border-style: solid;
+            border-color: #ff9a9e transparent transparent transparent;
+        }
+
+        @keyframes floatBubble {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        .order-dish {
+            font-size: 42px;
+            line-height: 1.1;
+        }
+
+        .order-name {
+            font-size: 13px;
+            font-weight: 800;
+            color: #4a2c2a;
+            margin-top: 2px;
+        }
+
+        .patience-bar-bg {
+            width: 100%;
+            height: 7px;
+            background: #eeeeee;
+            border-radius: 10px;
+            margin-top: 6px;
+            overflow: hidden;
+        }
+
+        .patience-bar-fill {
+            height: 100%;
+            width: 100%;
+            background: #4cd137;
+            transition: width 0.2s linear, background-color 0.3s;
+        }
+
+        .customer-avatar {
+            font-size: 85px;
+            line-height: 1;
+            filter: drop-shadow(0 6px 8px rgba(0,0,0,0.15));
+            animation: idleBounce 1.5s ease-in-out infinite;
+        }
+
+        @keyframes idleBounce {
+            0%, 100% { transform: scaleY(1); }
+            50% { transform: scaleY(0.95) translateY(3px); }
+        }
+
+        .counter-zone {
+            background: #ffffff;
+            border-top: 5px solid #e17055;
+            border-radius: 28px 28px 0 0;
+            padding: 15px 15px 20px;
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            box-shadow: 0 -8px 25px rgba(74, 44, 42, 0.15);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .cooking-row {
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 40px;
+            gap: 12px;
+            margin-bottom: 10px;
+            width: 100%;
+        }
+
+        .slot {
+            width: 68px;
+            height: 68px;
+            background: #fff5f5;
+            border: 3px dashed #ff758c;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
             cursor: pointer;
-            transition: all 0.2s;
         }
 
         .slot.filled {
             border-style: solid;
-            background: #fff;
-            transform: scale(1.05);
+            background: #ffffff;
+            animation: popIn 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0.5); }
+            100% { transform: scale(1); }
         }
 
         .cook-btn {
             background: linear-gradient(45deg, #ff758c, #ff7eb3);
-            color: white;
+            color: #ffffff;
             border: none;
-            border-radius: 50px;
-            padding: 12px 35px;
+            border-radius: 20px;
+            height: 68px;
+            padding: 0 22px;
             font-family: inherit;
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 800;
             cursor: pointer;
             box-shadow: 0 6px 15px rgba(255, 117, 140, 0.4);
-            transition: transform 0.1s;
         }
 
         .cook-btn:active {
-            transform: scale(0.95);
+            transform: scale(0.93);
         }
 
-        #message {
-            margin-top: 12px;
-            font-weight: 800;
-            font-size: 16px;
-            min-height: 24px;
+        #status-msg {
+            font-size: 14px;
+            font-weight: 700;
             color: #d6336c;
+            min-height: 20px;
+            margin-bottom: 10px;
+            text-align: center;
         }
 
-        /* Полка с ингредиентами */
-        .section-title {
-            font-size: 18px;
-            font-weight: 800;
-            margin: 10px 0;
-        }
-
-        .ingredients-grid, .recipes-grid {
+        .ingredients-dock {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-            width: 90%;
-            max-width: 500px;
-            margin-bottom: 20px;
+            gap: 8px;
+            width: 100%;
         }
 
-        .item-card {
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 16px;
-            padding: 10px 5px;
+        .ing-btn {
+            background: #fff9f9;
+            border: 2px solid #ffd1d8;
+            border-radius: 15px;
+            padding: 8px 4px;
             text-align: center;
             cursor: pointer;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-            transition: transform 0.15s;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.05);
         }
 
-        .item-card:active {
-            transform: scale(0.92);
+        .ing-btn:active {
+            transform: scale(0.9);
+            background: #ffe3e8;
         }
 
-        .item-emoji {
-            font-size: 32px;
+        .ing-emoji {
+            font-size: 28px;
             display: block;
         }
 
-        .item-name {
-            font-size: 12px;
-            font-weight: 600;
-            margin-top: 4px;
+        .ing-name {
+            font-size: 11px;
+            font-weight: 700;
             display: block;
+            margin-top: 2px;
         }
 
-        .recipe-locked {
-            opacity: 0.4;
-            filter: grayscale(100%);
+        .floating-fx {
+            position: fixed;
+            font-weight: 900;
+            font-size: 24px;
+            pointer-events: none;
+            z-index: 100;
+            animation: flyUp 1s ease-out forwards;
+            text-shadow: 0 2px 4px rgba(255,255,255,0.8);
+        }
+
+        @keyframes flyUp {
+            0% { opacity: 1; transform: translate(-50%, 0) scale(0.8); }
+            100% { opacity: 0; transform: translate(-50%, -70px) scale(1.2); }
+        }
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(74, 44, 42, 0.6);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+            padding: 15px;
+        }
+
+        .modal-overlay.open {
+            display: flex;
+        }
+
+        .modal-card {
+            background: #ffffff;
+            border-radius: 25px;
+            width: 100%;
+            max-width: 450px;
+            max-height: 80vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.25);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            font-size: 20px;
+        }
+
+        .close-btn {
+            background: #ff758c;
+            color: #ffffff;
+            border: none;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .recipe-list {
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .recipe-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #fff5f5;
+            padding: 8px 14px;
+            border-radius: 14px;
+            font-weight: 700;
+            font-size: 14px;
         }
     </style>
 </head>
 <body>
 
     <header>
-        <h1>🍳 Шеф-Алхимик</h1>
-        <button class="music-btn" id="music-toggle">🎵 Музыка: Выкл</button>
-    </header>
-
-    <div class="cooking-zone">
-        <div>Выберите 2 ингредиента для смешивания:</div>
-        <div class="slots">
-            <div class="slot" id="slot-0" onclick="removeIngredient(0)"></div>
-            <div class="slot" id="slot-1" onclick="removeIngredient(1)"></div>
-        </div>
-        <button class="cook-btn" onclick="cook()">Приготовить! ✨</button>
-        <div id="message">Нажмите на продукты ниже</div>
-    </div>
-
-    <div class="section-title">Продукты</div>
-    <div class="ingredients-grid" id="ingredients-list"></div>
-
-    <div class="section-title">Книга рецептов (<span id="unlocked-count">0</span>/<span id="total-count">0</span>)</div>
-    <div class="recipes-grid" id="recipes-list"></div>
-
-    <script>
-        // --- БАЗА ПРОДУКТОВ И РЕЦЕПТОВ ---
-        const ingredients = [
-            { id: 'flour', name: 'Мука', emoji: '🌾' },
-            { id: 'egg', name: 'Яйцо', emoji: '🥚' },
-            { id: 'milk', name: 'Молоко', emoji: '🥛' },
-            { id: 'cheese', name: 'Сыр', emoji: '🧀' },
-            { id: 'tomato', name: 'Томат', emoji: '🍅' },
-            { id: 'meat', name: 'Мясо', emoji: '🥩' },
-            { id: 'choco', name: 'Шоколад', emoji: '🍫' },
-            { id: 'apple', name: 'Яблоко', emoji: '🍎' }
-        ];
-
-        const recipes = [
-            { items: ['flour', 'egg'], result: 'Блинчики', emoji: '🥞' },
-            { items: ['flour', 'milk'], result: 'Хлеб', emoji: '🍞' },
-            { items: ['flour', 'cheese'], result: 'Пицца', emoji: '🍕' },
-            { items: ['flour', 'apple'], result: 'Пирог', emoji: '🥧' },
-            { items: ['flour', 'choco'], result: 'Пончик', emoji: '🍩' },
-            { items: ['egg', 'milk'], result: 'Омлет', emoji: '🍳' },
-            { items: ['meat', 'cheese'], result: 'Бургер', emoji: '🍔' },
-            { items: ['meat', 'tomato'], result: 'Стейк с соусом', emoji: '🥘' },
-            { items: ['milk', 'choco'], result: 'Какао', emoji: '☕' },
-            { items: ['egg', 'choco'], result: 'Торт', emoji: '🎂' }
-        ];
-
-        let selected = [];
-        let unlockedRecipes = JSON.parse(localStorage.getItem('chef_unlocked')) || [];
-
-        // --- ИНИЦИАЛИЗАЦИЯ ЯНДЕКС ИГР ---
-        if (window.YaGames) {
-            YaGames.init().then(ysdk => {
-                console.log('Yandex SDK initialized');
-                ysdk.features.LoadingAPI?.ready();
-            }).catch(console.error);
-        }
-
-        // --- ЗВУКОВОЙ ДВИЖОК (Без внешних файлов) ---
-        let audioCtx = null;
-        let isMusicPlaying = false;
-        let musicInterval = null;
-
-        function initAudio() {
-            if (!audioCtx) {
-                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            }
-        }
-
-        function playTone(freq, duration, type = 'sine', vol = 0.1) {
-            if (!audioCtx) return;
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.type = type;
-            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-            gain.gain.setValueAtTime(vol, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-            osc.start();
-            osc.stop(audioCtx.currentTime + duration);
-        }
-
-        // Легкая фоновая мелодия
-        const melody = [261.63, 329.63, 392.00, 523.25, 392.00, 329.63];
-        let noteIndex = 0;
-
-        document.getElementById('music-toggle').addEventListener('click', function() {
-            initAudio();
-            if (isMusicPlaying) {
-                clearInterval(musicInterval);
-                isMusicPlaying = false;
-                this.textContent = '🎵 Музыка: Выкл';
-            } else {
-                isMusicPlaying = true;
-                this.textContent = '🎵 Музыка: Вкл';
-                musicInterval = setInterval(() => {
-                    playTone(melody[noteIndex], 0.4, 'triangle', 0.05);
-                    noteIndex = (noteIndex + 1) % melody.length;
-                }, 450);
-            }
-        });
-
-        // --- ЛОГИКА ИГРЫ ---
-        function renderIngredients() {
-            const container = document.getElementById('ingredients-list');
-            container.innerHTML = '';
-            ingredients.forEach(ing => {
-                const card = document.createElement('div');
-                card.className = 'item-card';
-                card.innerHTML = `<span class="item-emoji">${ing.emoji}</span><span class="item-name">${ing.name}</span>`;
-                card.onclick = () => addIngredient(ing);
-                container.appendChild(card);
-            });
-        }
-
-        function renderRecipes() {
-            const container = document.getElementById('recipes-list');
-            container.innerHTML = '';
-            document.getElementById('total-count').textContent = recipes.length;
-            document.getElementById('unlocked-count').textContent = unlockedRecipes.length;
-
-recipes.forEach((rec, index) => {
-const isUnlocked = unlockedRecipes.includes(index);
-const card = document.createElement('div');
-card.className = item-card ${isUnlocked ? '' : 'recipe-locked'};
-card.innerHTML = <span class="item-emoji">${isUnlocked ? rec.emoji : '❓'}</span> <span class="item-name">${isUnlocked ? rec.result : 'Секрет'}</span>;
-container.appendChild(card);
+        <div class="stats-badge">💰 <span id="coins">0</span></div>
+        <div class="header-btns">
+            <button class="icon-btn" id="open-menu-btn">📖 Меню</button>
+const ingredients = [
+{ id: 'flour', name: 'Мука', emoji: '🌾' },
+{ id: 'egg', name: 'Яйцо', emoji: '🥚' },
+{ id: 'milk', name: 'Молоко', emoji: '🥛' },
+{ id: 'cheese', name: 'Сыр', emoji: '🧀' },
+{ id: 'tomato', name: 'Томат', emoji: '🍅' },
+{ id: 'meat', name: 'Мясо', emoji: '🥩' },
+{ id: 'choco', name: 'Шоколад', emoji: '🍫' },
+{ id: 'apple', name: 'Яблоко', emoji: '🍎' }
+];
+const recipes = [
+{ items: ['flour', 'egg'], name: 'Блинчики', emoji: '🥞', price: 15 },
+{ items: ['flour', 'milk'], name: 'Хлеб', emoji: '🍞', price: 15 },
+{ items: ['flour', 'cheese'], name: 'Пицца', emoji: '🍕', price: 20 },
+{ items: ['flour', 'apple'], name: 'Пирог', emoji: '🥧', price: 20 },
+{ items: ['flour', 'choco'], name: 'Пончик', emoji: '🍩', price: 20 },
+{ items: ['egg', 'milk'], name: 'Омлет', emoji: '🍳', price: 15 },
+{ items: ['meat', 'cheese'], name: 'Бургер', emoji: '🍔', price: 25 },
+{ items: ['meat', 'tomato'], name: 'Стейк', emoji: '🥘', price: 25 },
+{ items: ['milk', 'choco'], name: 'Какао', emoji: '☕', price: 18 },
+{ items: ['egg', 'choco'], name: 'Торт', emoji: '🎂', price: 25 }
+];
+const avatars = ['👩', '👨', '👧', '👦', '👵', '👴', '👱‍♀️', '🧔', '👩‍🦰', '🧑‍🦱'];
+let coins = parseInt(localStorage.getItem('cafe_coins')) || 0;
+let selected = [];
+let currentOrder = null;
+let patience = 100;
+let gameLoop = null;
+let isTransitioning = false;
+if (window.YaGames) {
+YaGames.init().then(ysdk => {
+if (ysdk.features && ysdk.features.LoadingAPI) {
+ysdk.features.LoadingAPI.ready();
+}
+}).catch(() => {});
+}
+let audioCtx = null;
+let isMusicOn = false;
+let musicTimer = null;
+function initAudio() {
+if (!audioCtx) {
+const AudioContext = window.AudioContext || window.webkitAudioContext;
+if (AudioContext) audioCtx = new AudioContext();
+}
+}
+function playTone(freq, dur, type, vol) {
+if (!audioCtx) return;
+const osc = audioCtx.createOscillator();
+const gain = audioCtx.createGain();
+osc.type = type || 'sine';
+osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+gain.gain.setValueAtTime(vol || 0.08, audioCtx.currentTime);
+gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + dur);
+osc.connect(gain);
+gain.connect(audioCtx.destination);
+osc.start();
+osc.stop(audioCtx.currentTime + dur);
+}
+const notes = [261.63, 329.63, 392.00, 493.88, 392.00, 329.63];
+let step = 0;
+document.getElementById('music-btn').addEventListener('click', function() {
+initAudio();
+if (isMusicOn) {
+clearInterval(musicTimer);
+isMusicOn = false;
+this.textContent = '🎵 Выкл';
+} else {
+isMusicOn = true;
+this.textContent = '🎵 Вкл';
+musicTimer = setInterval(() => {
+playTone(notes[step], 0.35, 'triangle', 0.04);
+step = (step + 1) % notes.length;
+}, 420);
+}
+});
+function spawnEffect(text, color) {
+const el = document.createElement('div');
+el.className = 'floating-fx';
+el.textContent = text;
+el.style.color = color || '#2ecc71';
+el.style.left = '50%';
+el.style.top = '45%';
+document.body.appendChild(el);
+setTimeout(() => el.remove(), 1000);
+}
+function initUI() {
+document.getElementById('coins').textContent = coins;
+const dock = document.getElementById('ingredients-dock');
+ingredients.forEach(ing => {
+const btn = document.createElement('div');
+btn.className = 'ing-btn';
+btn.innerHTML = '' + ing.emoji + '' + ing.name + '';
+btn.addEventListener('click', () => addIng(ing));
+dock.appendChild(btn);
+});
+const list = document.getElementById('recipe-list');
+recipes.forEach(r => {
+const i1 = ingredients.find(i => i.id === r.items[0]);
+const i2 = ingredients.find(i => i.id === r.items[1]);
+const row = document.createElement('div');
+row.className = 'recipe-row';
+row.innerHTML = '' + i1.emoji + ' ' + i1.name + ' + ' + i2.emoji + ' ' + i2.name + '➔ ' + r.emoji + ' ' + r.name + ' (+' + r.price + '💰)';
+list.appendChild(row);
+});
+document.getElementById('slot-0').addEventListener('click', () => removeIng(0));
+document.getElementById('slot-1').addEventListener('click', () => removeIng(1));
+document.getElementById('serve-btn').addEventListener('click', serveDish);
+document.getElementById('open-menu-btn').addEventListener('click', () => toggleMenu(true));
+document.getElementById('close-menu-btn').addEventListener('click', () => toggleMenu(false));
+document.getElementById('menu-modal').addEventListener('click', function(e) {
+if (e.target === this) toggleMenu(false);
 });
 }
-function addIngredient(ing) {
+function toggleMenu(show) {
+const modal = document.getElementById('menu-modal');
+if (show) modal.classList.add('open');
+else modal.classList.remove('open');
+}
+function addIng(ing) {
+if (isTransitioning) return;
 initAudio();
 if (selected.length < 2) {
 selected.push(ing);
-playTone(500, 0.1, 'sine', 0.1);
+playTone(520, 0.08, 'sine', 0.1);
 updateSlots();
 }
 }
-function removeIngredient(index) {
-if (selected[index]) {
+function removeIng(idx) {
+if (selected[idx]) {
 initAudio();
-selected.splice(index, 1);
-playTone(300, 0.1, 'sine', 0.1);
+selected.splice(idx, 1);
+playTone(320, 0.08, 'sine', 0.1);
 updateSlots();
 }
 }
 function updateSlots() {
 for (let i = 0; i < 2; i++) {
-const slot = document.getElementById(slot-${i});
+const slot = document.getElementById('slot-' + i);
 if (selected[i]) {
 slot.textContent = selected[i].emoji;
 slot.classList.add('filled');
@@ -337,39 +518,102 @@ slot.classList.remove('filled');
 }
 }
 }
-function cook() {
-initAudio();
-const msg = document.getElementById('message');
-if (selected.length < 2) {
-msg.textContent = 'Нужно выбрать 2 продукта!';
-playTone(150, 0.2, 'sawtooth', 0.1);
-return;
+function nextCustomer() {
+isTransitioning = false;
+const box = document.getElementById('customer-box');
+box.className = 'customer-wrapper';
+currentOrder = recipes[Math.floor(Math.random() * recipes.length)];
+const avatar = avatars[Math.floor(Math.random() * avatars.length)];
+document.getElementById('customer-avatar').textContent = avatar;
+document.getElementById('order-emoji').textContent = currentOrder.emoji;
+document.getElementById('order-name').textContent = currentOrder.name;
+patience = 100;
+updatePatienceBar();
+setTimeout(() => {
+box.classList.add('arrived');
+playTone(440, 0.1, 'sine', 0.05);
+}, 50);
+clearInterval(gameLoop);
+gameLoop = setInterval(() => {
+if (document.getElementById('menu-modal').classList.contains('open')) return;
+patience -= 0.7;
+updatePatienceBar();
+if (patience <= 0) {
+clearInterval(gameLoop);
+customerLeave(false);
 }
-const ids = selected.map(item => item.id).sort();
-const foundIndex = recipes.findIndex(r => {
-const rIds = [...r.items].sort();
-return rIds[0] === ids[0] && rIds[1] === ids[1];
-});
-if (foundIndex !== -1) {
-const recipe = recipes[foundIndex];
-msg.textContent = Получилось: ${recipe.emoji} ${recipe.result}!;
-// Победный аккорд
-playTone(523.25, 0.15);
-setTimeout(() => playTone(659.25, 0.3), 100);
-if (!unlockedRecipes.includes(foundIndex)) {
-unlockedRecipes.push(foundIndex);
-localStorage.setItem('chef_unlocked', JSON.stringify(unlockedRecipes));
-renderRecipes();
+}, 200);
 }
+function updatePatienceBar() {
+const fill = document.getElementById('patience-fill');
+fill.style.width = Math.max(0, patience) + '%';
+if (patience > 50) fill.style.backgroundColor = '#4cd137';
+else if (patience > 25) fill.style.backgroundColor = '#fbc531';
+else fill.style.backgroundColor = '#e84118';
+}
+function customerLeave(isHappy) {
+isTransitioning = true;
+clearInterval(gameLoop);
+const box = document.getElementById('customer-box');
+const msg = document.getElementById('status-msg');
+if (isHappy) {
+const tip = patience > 50 ? 5 : 0;
+const total = currentOrder.price + tip;
+coins += total;
+localStorage.setItem('cafe_coins', coins);
+document.getElementById('coins').textContent = coins;
+box.classList.remove('arrived');
+box.classList.add('leaving-happy');
+msg.textContent = tip > 0 ? 'Отлично! +' + total + '💰 (с чаевыми!)' : 'Спасибо! +' + total + '💰';
+spawnEffect('+' + total + ' 💰', '#27ae60');
+playTone(523.25, 0.12, 'sine', 0.1);
+setTimeout(() => playTone(659.25, 0.12, 'sine', 0.1), 90);
+setTimeout(() => playTone(783.99, 0.25, 'sine', 0.1), 180);
 } else {
-msg.textContent = 'Ничего не вышло, попробуйте другое сочетание 🤷‍♂️';
-playTone(200, 0.3, 'sawtooth', 0.1);
+box.classList.remove('arrived');
+box.classList.add('leaving-angry');
+msg.textContent = 'Посетитель не дождался и ушел 😠';
+spawnEffect('Время вышло! 😠', '#e84118');
+playTone(180, 0.3, 'sawtooth', 0.1);
 }
 selected = [];
 updateSlots();
+setTimeout(nextCustomer, 900);
 }
-renderIngredients();
-renderRecipes();
+function serveDish() {
+if (isTransitioning) return;
+initAudio();
+const msg = document.getElementById('status-msg');
+if (selected.length < 2) {
+msg.textContent = 'Выберите 2 продукта снизу!';
+playTone(200, 0.15, 'sawtooth', 0.08);
+return;
+}
+const ids = [selected[0].id, selected[1].id].sort();
+const cooked = recipes.find(r => {
+const rIds = [r.items[0], r.items[1]].sort();
+return rIds[0] === ids[0] && rIds[1] === ids[1];
+});
+if (!cooked) {
+msg.textContent = 'Такого блюда нет в меню! Смотрите 📖 Меню';
+spawnEffect('Испорчено! 💥', '#e67e22');
+playTone(160, 0.25, 'sawtooth', 0.1);
+selected = [];
+updateSlots();
+return;
+}
+if (cooked.name === currentOrder.name) {
+customerLeave(true);
+} else {
+msg.textContent = 'Вы приготовили ' + cooked.emoji + ' ' + cooked.name + ', а гость просил ' + currentOrder.emoji + ' ' + currentOrder.name + '!';
+spawnEffect('Не тот заказ! ❌', '#e84118');
+playTone(220, 0.2, 'sawtooth', 0.1);
+selected = [];
+updateSlots();
+}
+}
+initUI();
+setTimeout(nextCustomer, 400);
 </script>
 
 </body>
