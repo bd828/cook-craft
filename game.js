@@ -1,12 +1,12 @@
 const trayIngredients = [
-    { id: 'sauce', name: 'Чесночный соус', emoji: '🧄', unlocked: true },
-    { id: 'meat', name: 'Мясо с вертела', emoji: '🥩', unlocked: true, needsSpit: true },
-    { id: 'cucumber', name: 'Огурчики', emoji: '🥒', unlocked: true },
-    { id: 'tomato', name: 'Томаты', emoji: '🍅', unlocked: true },
+    { id: 'sauce', name: 'Соус', emoji: '🧄', unlocked: true },
+    { id: 'meat', name: 'Мясо', emoji: '🥩', unlocked: true, needsSpit: true },
+    { id: 'cucumber', name: 'Огурец', emoji: '🥒', unlocked: true },
+    { id: 'tomato', name: 'Томат', emoji: '🍅', unlocked: true },
     { id: 'cabbage', name: 'Капуста', emoji: '🥬', unlocked: true },
-    { id: 'fries', name: 'Картофель фри', emoji: '🍟', unlocked: true },
-    { id: 'cheese', name: 'Сыр Чеддер', emoji: '🧀', unlocked: false },
-    { id: 'jalapeno', name: 'Халапеньо', emoji: '🌶️', unlocked: false }
+    { id: 'fries', name: 'Фри', emoji: '🍟', unlocked: true },
+    { id: 'cheese', name: 'Сыр', emoji: '🧀', unlocked: false },
+    { id: 'jalapeno', name: 'Перец', emoji: '🌶️', unlocked: false }
 ];
 
 const menuTemplates = [
@@ -34,12 +34,10 @@ let meatStock = save.spitCapacity;
 let currentLayers = [];
 let isWrapped = false;
 
-// Состояние гриля: 'empty' | 'cooking' | 'ready' | 'burned'
 let grillState = 'empty';
 let grillProgress = 0;
 let grillInterval = null;
 
-// Состояние клиента
 let currentOrder = null;
 let patience = 100;
 let customerTimer = null;
@@ -57,7 +55,6 @@ function persist() {
     localStorage.setItem('shawarma_save_v1', JSON.stringify(save));
 }
 
-// Звуки Web Audio API
 let audioCtx = null;
 let musicOn = false;
 let musicLoop = null;
@@ -115,7 +112,6 @@ function showFloatingText(text, color) {
     setTimeout(function() { el.remove(); }, 900);
 }
 
-// Смена названия ларька по клику на вывеску
 document.getElementById('shop-sign').addEventListener('click', function() {
     const name = prompt('Введите название вашей шаурмичной (до 18 букв):', save.shopName);
     if (name && name.trim()) {
@@ -152,7 +148,6 @@ function renderTray() {
     });
 }
 
-// Вертел с мясом
 function updateSpitVisual() {
     document.getElementById('meat-stock').textContent = meatStock;
     const meatEl = document.getElementById('spit-meat');
@@ -187,7 +182,6 @@ document.getElementById('spit-btn').addEventListener('click', function() {
     }
 });
 
-// Сборка на лаваше
 function addIngredientToLavash(ing, fromSpit) {
     initSound();
     if (ing.needsSpit && !fromSpit) {
@@ -254,7 +248,6 @@ document.getElementById('wrap-btn').addEventListener('click', function() {
     beep(680, 0.12, 'sine', 0.1);
 });
 
-// Контактный гриль
 function updateGrillVisual() {
     const vis = document.getElementById('grill-visual');
     const hint = document.getElementById('grill-hint');
@@ -284,7 +277,6 @@ function updateGrillVisual() {
 document.getElementById('grill-btn').addEventListener('click', function() {
     initSound();
 
-    // 1. Кладем завернутую шаурму на пустой гриль
     if (grillState === 'empty') {
         if (!isWrapped) {
             toast('Сначала соберите и заверните шаурму на доске!');
@@ -293,7 +285,6 @@ document.getElementById('grill-btn').addEventListener('click', function() {
         grillState = 'cooking';
         grillProgress = 0;
 
-        // Очищаем доску под следующий заказ
         const cookedLayers = [...currentLayers];
         currentLayers = [];
         isWrapped = false;
@@ -307,21 +298,20 @@ document.getElementById('grill-btn').addEventListener('click', function() {
         clearInterval(grillInterval);
         grillInterval = setInterval(function() {
             grillProgress += stepSpeed;
-if (grillProgress >= 60 && grillProgress <= 88) {
-grillState = 'ready';
-} else if (grillProgress > 88) {
-grillState = 'burned';
-}
-if (grillProgress >= 100) {
-clearInterval(grillInterval);
-}
+            if (grillProgress >= 60 && grillProgress <= 88) {
+                grillState = 'ready';
+            } else if (grillProgress > 88) {
+                grillState = 'burned';
+            }
+            if (grillProgress >= 100) {
+                clearInterval(grillInterval);
+            }
 updateGrillVisual();
 }, 100);
 this.dataset.cooked = JSON.stringify(cookedLayers.map(function(i) { return i.id; }));
 updateGrillVisual();
 return;
 }
-// 2. Если сгорела — выкидываем
 if (grillState === 'burned') {
 clearInterval(grillInterval);
 grillState = 'empty';
@@ -331,7 +321,6 @@ toast('Сгоревшая шаурма отправлена в мусорку �
 beep(160, 0.25, 'sawtooth', 0.1);
 return;
 }
-// 3. Снимаем и отдаем клиенту
 if (grillState === 'cooking' || grillState === 'ready') {
 const wasPerfect = (grillState === 'ready');
 clearInterval(grillInterval);
@@ -342,7 +331,6 @@ const cookedIds = JSON.parse(this.dataset.cooked || '[]');
 evaluateOrder(cookedIds, wasPerfect);
 }
 });
-// Проверка заказа клиента
 function evaluateOrder(cookedIds, wasPerfect) {
 if (isBusy || !currentOrder) return;
 const reqSorted = [...currentOrder.req].sort().join(',');
@@ -367,7 +355,6 @@ toast('Клиент недоволен: состав не совпал с чек
 beep(200, 0.25, 'sawtooth', 0.1);
 }
 }
-// Клиенты
 function spawnCustomer() {
 isBusy = false;
 const availableMenus = menuTemplates.filter(function(m) {
@@ -414,7 +401,7 @@ const chip = document.createElement('div');
 const isDone = (addedCounts[reqId] || 0) > 0;
 if (isDone) addedCounts[reqId] -= 1;
 chip.className = 'ticket-chip' + (isDone ? ' done' : '');
-chip.textContent = ing.emoji + ' ' + ing.name.split(' ');
+chip.textContent = ing.emoji + ' ' + ing.name;
 box.appendChild(chip);
 });
 }
@@ -433,11 +420,9 @@ card.classList.remove('arrived');
 card.classList.add(isHappy ? 'leave-happy' : 'leave-angry');
 setTimeout(spawnCustomer, 650);
 }
-// Магазин улучшений
 function renderShop() {
 const list = document.getElementById('shop-list');
 list.innerHTML = '';
-// 1. Ускорение гриля
 const grillCost = save.grillSpeed * 75;
 const gRow = document.createElement('div');
 gRow.className = 'shop-row';
@@ -455,7 +440,6 @@ beep(650, 0.2, 'sine', 0.1);
 }
 });
 list.appendChild(gRow);
-// 2. Большой вертел
 const spitCost = save.spitCapacity * 12;
 const sRow = document.createElement('div');
 sRow.className = 'shop-row';
@@ -475,7 +459,6 @@ beep(650, 0.2, 'sine', 0.1);
 }
 });
 list.appendChild(sRow);
-// 3. Новые продукты
 const extras = [
 { id: 'cheese', title: '🧀 Сыр Чеддер', desc: 'Открывает рецепт «Сырная шаурма» (+35💰)', cost: 60 },
 { id: 'jalapeno', title: '🌶️ Перец Халапеньо', desc: 'Открывает «Острую Мексику» и «Мега-Шаурму» (+50💰)', cost: 110 }
@@ -512,7 +495,6 @@ document.getElementById('shop-modal').classList.remove('open');
 document.getElementById('shop-modal').addEventListener('click', function(e) {
 if (e.target === this) document.getElementById('shop-modal').classList.remove('open');
 });
-// Старт игры
 renderHeader();
 renderTray();
 updateSpitVisual();
