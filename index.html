@@ -165,7 +165,7 @@
         </div>
     </div>
 
-    <script>
+   <script>
         const INGREDIENTS = [
             { id: 'sauce', name: 'Соус', emoji: '🧄' },
             { id: 'meat', name: 'Мясо', emoji: '🥩' },
@@ -189,7 +189,7 @@
         const FACES = ['🧔', '👩', '👨', '👱‍♀️', '👩‍🦰', '🧑‍🦱', '🧢', '🕶️', '🎧', '👷'];
         const JACKETS = ['#0984e3', '#6c5ce7', '#e17055', '#00b894', '#d63031', '#e84393', '#34495e'];
 
-        let data = JSON.parse(localStorage.getItem('shawarma_v4')) || {
+        let data = JSON.parse(localStorage.getItem('shawarma_v5')) || {
             coins: 0,
             signName: 'ШАУРМА 24/7',
             grillLvl: 1,
@@ -213,12 +213,12 @@
         let busy = false;
 
         if (window.YaGames) {
-            YaGames.init().then(ysdk => {
+            YaGames.init().then(function(ysdk) {
                 if (ysdk.features && ysdk.features.LoadingAPI) ysdk.features.LoadingAPI.ready();
-            }).catch(() => {});
+            }).catch(function() {});
         }
 
-        function save() { localStorage.setItem('shawarma_v4', JSON.stringify(data)); }
+        function save() { localStorage.setItem('shawarma_v5', JSON.stringify(data)); }
 
         let actx = null, beatOn = false, beatTimer = null;
         function initAudio() {
@@ -247,8 +247,8 @@
                 clearInterval(beatTimer); beatOn = false; this.textContent = '🎵 Бит';
             } else {
                 beatOn = true; this.textContent = '🔊 Бит';
-                beatTimer = setInterval(() => {
-                    tone(lofiNotes[noteStep], 0.35, 'triangle', 0.04);
+                beatTimer = setInterval(function() {
+                    tone(lofiNotes.at(noteStep), 0.35, 'triangle', 0.04);
                     noteStep = (noteStep + 1) % lofiNotes.length;
                 }, 460);
             }
@@ -260,10 +260,10 @@
             const el = document.createElement('div');
             el.className = 'pop-fx'; el.textContent = txt; el.style.color = color || '#55efc4';
             document.body.appendChild(el);
-            setTimeout(() => el.remove(), 900);
+            setTimeout(function() { el.remove(); }, 900);
         }
 
-        document.getElementById('neon-board').addEventListener('click', () => {
+        document.getElementById('neon-board').addEventListener('click', function() {
             const val = prompt('Название вашей шаурмичной (до 18 букв):', data.signName);
             if (val && val.trim()) {
                 data.signName = val.trim().slice(0, 18).toUpperCase();
@@ -306,13 +306,13 @@
         const spitZone = document.getElementById('spit-zone');
         let lastSliceTime = 0;
         spitZone.addEventListener('click', sliceMeatAction);
-        spitZone.addEventListener('pointermove', e => {
+        spitZone.addEventListener('pointermove', function(e) {
             if (e.buttons > 0 && Date.now() - lastSliceTime > 260) {
                 lastSliceTime = Date.now(); sliceMeatAction();
             }
         });
 
-        setInterval(() => {
+        setInterval(function() {
             if (data.autoSlicer && spitLeft > 0 && cutMeat < 5) {
                 spitLeft -= 1; cutMeat += 1; updateSpitUI();
             }
@@ -321,76 +321,83 @@
         function renderTray() {
             const grid = document.getElementById('tray-grid');
             grid.innerHTML = '';
-            INGREDIENTS.forEach(ing => {
+            INGREDIENTS.forEach(function(ing) {
+                const ok = data.unlocked.includes(ing.id);
+                const card = document.createElement('div');
+                card.className = 'tray-item' + (ok ? '' : ' locked');
+                card.innerHTML = '<span class="tray-emoji">' + ing.emoji + '</span><span class="tray-name">' + (ok ? ing.name : '🔒 Ларек') + '</span>';
+                if (ok) card.addEventListener('click', function() { putIngredient(ing); });
+                grid.appendChild(card);
+            });
+        }
+
+        function putIngredient(ing) {
+            initAudio();
+            if (wrapped) { promptMsg('Шаурма уже завернута! Нажмите на неё, чтобы отправить на гриль ➡️'); return; }
+            if (ing.id === 'meat') {
+                if (cutMeat <= 0) { promptMsg('Нет нарезанного мяса! Проведите по вертелу слева 🔪'); tone(200, 0.15, 'sawtooth', 0.08); return; }
+                cutMeat -= 1; updateSpitUI();
+            }
+            if (layers.length >= 6) { promptMsg('Лаваш полон! Нажмите «Завернуть»'); return; }
+            layers.push(ing);
+            tone(520, 0.07, 'sine', 0.09);
+            renderBoard(); updateOrderChips();
+        }
+
+        function renderBoard() {
+            const board = document.getElementById('lavash-board'), box = document.getElementById('layers-box'), sauce = document.getElementById('sauce-svg');
+            box.innerHTML = '';
+            if (wrapped) {
+                board.classList.add('wrapped');
+            } else {
+                board.classList.remove('wrapped');
+                if (layers.some(function(i) { return i.id === 'sauce'; })) sauce.classList.add('visible');
+                else sauce.classList.remove('visible');
+                layers.forEach(function(item) {
+                    if (item.id === 'sauce') return;
+                    const el = document.createElement('span');
+                    el.className = 'layer-emoji'; el.textContent = item.emoji;
+                    box.appendChild(el);
+                });
+            }
+        }
+
+        function wrapAction() {
+            initAudio();
+            if (wrapped) return;
+            if (layers.length === 0) { promptMsg('Сначала положите продукты на лаваш!'); return; }
+            wrapped = true; renderBoard();
+            tone(680, 0.12, 'sine', 0.1);
+            promptMsg('Завернуто! Нажмите на готовую 🌯 или на Гриль справа 🔥');
+        }
+
+        const lavashBoard = document.getElementById('lavash-board');
+        let startY = 0;
+        lavashBoard.addEventListener('pointerdown', function(e) { startY = e.clientY; });
+        lavashBoard.addEventListener('pointerup', function(e) { if (startY - e.clientY > 25) wrapAction(); });
+
+        document.getElementById('btn-wrap').addEventListener('click', wrapAction);
+        document.getElementById('btn-trash').addEventListener('click', function() {
+            initAudio(); layers = []; wrapped = false; renderBoard(); updateOrderChips();
+            tone(240, 0.1, 'sine', 0.08); promptMsg('Доска очищена 🗑️');
+        });
+
+        document.getElementById('roll-ready').addEventListener('click', sendToGrill);
+        document.getElementById('grill-station').addEventListener('click', handleGrillClick);
+
+        function sendToGrill() {
+            initAudio();
 Use code with caution.
-const ok = data.unlocked.includes(ing.id);
-const card = document.createElement('div');
-card.className = 'tray-item' + (ok ? '' : ' locked');
-card.innerHTML = '' + ing.emoji + '' + (ok ? ing.name : '🔒 Ларек') + '';
-if (ok) card.addEventListener('click', () => putIngredient(ing));
-grid.appendChild(card);
-});
-}
-function putIngredient(ing) {
-initAudio();
-if (wrapped) { promptMsg('Шаурма уже завернута! Нажмите на неё, чтобы отправить на гриль ➡️'); return; }
-if (ing.id === 'meat') {
-if (cutMeat <= 0) { promptMsg('Нет нарезанного мяса! Проведите по вертелу слева 🔪'); tone(200, 0.15, 'sawtooth', 0.08); return; }
-cutMeat -= 1; updateSpitUI();
-}
-if (layers.length >= 6) { promptMsg('Лаваш полон! Нажмите «Завернуть»'); return; }
-layers.push(ing);
-tone(520, 0.07, 'sine', 0.09);
-renderBoard(); updateOrderChips();
-}
-function renderBoard() {
-const board = document.getElementById('lavash-board'), box = document.getElementById('layers-box'), sauce = document.getElementById('sauce-svg');
-box.innerHTML = '';
-if (wrapped) {
-board.classList.add('wrapped');
-} else {
-board.classList.remove('wrapped');
-if (layers.some(i => i.id === 'sauce')) sauce.classList.add('visible');
-else sauce.classList.remove('visible');
-layers.forEach(item => {
-if (item.id === 'sauce') return;
-const el = document.createElement('span');
-el.className = 'layer-emoji'; el.textContent = item.emoji;
-box.appendChild(el);
-});
-}
-}
-function wrapAction() {
-initAudio();
-if (wrapped) return;
-if (layers.length === 0) { promptMsg('Сначала положите продукты на лаваш!'); return; }
-wrapped = true; renderBoard();
-tone(680, 0.12, 'sine', 0.1);
-promptMsg('Завернуто! Нажмите на готовую 🌯 или на Гриль справа 🔥');
-}
-const lavashBoard = document.getElementById('lavash-board');
-let startY = 0;
-lavashBoard.addEventListener('pointerdown', e => { startY = e.clientY; });
-lavashBoard.addEventListener('pointerup', e => { if (startY - e.clientY > 25) wrapAction(); });
-document.getElementById('btn-wrap').addEventListener('click', wrapAction);
-document.getElementById('btn-trash').addEventListener('click', () => {
-initAudio(); layers = []; wrapped = false; renderBoard(); updateOrderChips();
-tone(240, 0.1, 'sine', 0.08); promptMsg('Доска очищена 🗑️');
-});
-document.getElementById('roll-ready').addEventListener('click', sendToGrill);
-document.getElementById('grill-station').addEventListener('click', handleGrillClick);
-function sendToGrill() {
-initAudio();
 if (!wrapped) { promptMsg('Сначала соберите и заверните шаурму!'); return; }
 if (grillState !== 'empty') { promptMsg('Гриль занят! Сначала снимите текущую шаурму'); return; }
 grillState = 'cooking'; heat = 0;
-grillPayload = layers.map(i => i.id);
+grillPayload = layers.map(function(i) { return i.id; });
 layers = []; wrapped = false; renderBoard(); updateOrderChips();
 tone(480, 0.12, 'sine', 0.1);
 promptMsg('Жарится! Нажмите на гриль в зеленой зоне 🔥');
 const speed = 2.3 + (data.grillLvl - 1) * 0.8;
 clearInterval(grillTimer);
-grillTimer = setInterval(() => {
+grillTimer = setInterval(function() {
 heat += speed;
 if (heat >= 58 && heat <= 88) grillState = 'ready';
 else if (heat > 88) grillState = 'burnt';
@@ -424,18 +431,18 @@ else if (grillState === 'ready') { plate.classList.add('active'); sub.textConten
 else if (grillState === 'burnt') { plate.classList.add('burnt'); sub.textContent = 'СГОРЕЛА! Выкинуть'; fill.style.backgroundColor = '#ee5253'; }
 }
 function makeClient() {
-const avail = RECIPES.filter(r => r.req.every(id => data.unlocked.includes(id)));
+const avail = RECIPES.filter(function(r) { return r.req.every(function(id) { return data.unlocked.includes(id); }); });
 return {
-order: avail[Math.floor(Math.random() * avail.length)],
-face: FACES[Math.floor(Math.random() * FACES.length)],
-jacket: JACKETS[Math.floor(Math.random() * JACKETS.length)]
+order: avail.at(Math.floor(Math.random() * avail.length)),
+face: FACES.at(Math.floor(Math.random() * FACES.length)),
+jacket: JACKETS.at(Math.floor(Math.random() * JACKETS.length))
 };
 }
 function fillQueue() { while (queue.length < 2) queue.push(makeClient()); }
 function renderQueue(leaveType) {
 const stage = document.getElementById('customers-stage');
 stage.innerHTML = '';
-queue.forEach((c, idx) => {
+queue.forEach(function(c, idx) {
 const unit = document.createElement('div');
 unit.className = 'client-unit' + (idx === 1 ? ' pos-1' : '');
 if (idx === 0 && leaveType === 'ok') unit.classList.add('leaving-ok');
@@ -450,12 +457,13 @@ if (!leaveType) { updateOrderChips(); updatePatienceUI(); }
 }
 function updateOrderChips() {
 const list = document.getElementById('active-order-list');
-if (!list || !queue[0]) return;
+const firstClient = queue.at(0);
+if (!list || !firstClient) return;
 list.innerHTML = '';
 const counts = {};
-layers.forEach(i => { counts[i.id] = (counts[i.id] || 0) + 1; });
-queue[0].order.req.forEach(reqId => {
-const ing = INGREDIENTS.find(i => i.id === reqId);
+layers.forEach(function(i) { counts[i.id] = (counts[i.id] || 0) + 1; });
+firstClient.order.req.forEach(function(reqId) {
+const ing = INGREDIENTS.find(function(i) { return i.id === reqId; });
 const chip = document.createElement('span');
 const ok = (counts[reqId] || 0) > 0;
 if (ok) counts[reqId] -= 1;
@@ -467,7 +475,7 @@ list.appendChild(chip);
 function startClientTimer() {
 busy = false; patience = 100; renderQueue(null);
 clearInterval(queueTimer);
-queueTimer = setInterval(() => {
+queueTimer = setInterval(function() {
 if (document.getElementById('shop-modal').classList.contains('open')) return;
 patience -= 0.42; updatePatienceUI();
 if (patience <= 0) { clearInterval(queueTimer); combo = 1; updateHUD(); nextClient(false); }
@@ -483,11 +491,12 @@ function nextClient(isHappy) {
 busy = true; clearInterval(queueTimer);
 renderQueue(isHappy ? 'ok' : 'bad');
 if (!isHappy) { popFx('Ушел! 😠', '#ee5253'); promptMsg('Гость не дождался! Комбо сброшено 😠'); tone(180, 0.3, 'sawtooth', 0.1); }
-setTimeout(() => { queue.shift(); fillQueue(); startClientTimer(); }, 550);
+setTimeout(function() { queue.shift(); fillQueue(); startClientTimer(); }, 550);
 }
 function serveToClient(cookedIds, isGolden) {
-if (busy || !queue[0]) return;
-const target = queue[0].order;
+const firstClient = queue.at(0);
+if (busy || !firstClient) return;
+const target = firstClient.order;
 if ([...target.req].sort().join(',') === [...cookedIds].sort().join(',')) {
 const earned = target.price + (isGolden ? 10 : 0) + (combo - 1) * 3;
 data.coins += earned; combo = Math.min(5, combo + 1);
@@ -495,8 +504,8 @@ save(); updateHUD();
 popFx('+' + earned + ' 💰 (x' + combo + ')', '#55efc4');
 promptMsg(isGolden ? 'Идеальная корочка! +' + earned + '💰' : 'Заказ отдан! +' + earned + '💰');
 tone(523.25, 0.1, 'sine', 0.1);
-setTimeout(() => tone(659.25, 0.1, 'sine', 0.1), 80);
-setTimeout(() => tone(783.99, 0.2, 'sine', 0.1), 160);
+setTimeout(function() { tone(659.25, 0.1, 'sine', 0.1); }, 80);
+setTimeout(function() { tone(783.99, 0.2, 'sine', 0.1); }, 160);
 nextClient(true);
 } else {
 combo = 1; updateHUD(); popFx('Не тот состав! ❌', '#ee5253');
@@ -510,34 +519,33 @@ const gCost = data.grillLvl * 70;
 const gCard = document.createElement('div');
 gCard.className = 'upg-card';
 gCard.innerHTML = '🔥 Турбо-Гриль (Ур. ' + data.grillLvl + ')Ускоряет жарку шаурмы<button class="btn-buy" ' + (data.coins < gCost ? 'disabled' : '') + '>' + gCost + ' 💰';
-gCard.querySelector('button').addEventListener('click', () => {
+gCard.querySelector('button').addEventListener('click', function() {
 if (data.coins >= gCost) { data.coins -= gCost; data.grillLvl += 1; save(); updateHUD(); renderShop(); tone(650, 0.2, 'sine', 0.1); }
 });
 list.appendChild(gCard);
 const aCard = document.createElement('div');
 aCard.className = 'upg-card';
 aCard.innerHTML = '🤖 Авто-нарезчик мясаСам срезает мясо каждые 3 сек<button class="btn-buy" ' + (data.autoSlicer || data.coins < 120 ? 'disabled' : '') + '>' + (data.autoSlicer ? 'Куплено' : '120 💰') + '';
-aCard.querySelector('button').addEventListener('click', () => {
+aCard.querySelector('button').addEventListener('click', function() {
 if (!data.autoSlicer && data.coins >= 120) { data.coins -= 120; data.autoSlicer = true; save(); updateHUD(); renderShop(); tone(700, 0.2, 'sine', 0.1); }
 });
 list.appendChild(aCard);
 [
 { id: 'cheese', title: '🧀 Сыр Чеддер', desc: 'Открывает «Сырную» (+35💰)', cost: 60 },
 { id: 'jalapeno', title: '🌶️ Халапеньо', desc: 'Открывает «Острую» и «Царскую» (+50💰)', cost: 100 }
-].forEach(u => {
+].forEach(function(u) {
 const bought = data.unlocked.includes(u.id);
 const card = document.createElement('div');
 card.className = 'upg-card';
 card.innerHTML = '' + u.title + '' + u.desc + '<button class="btn-buy" ' + (bought || data.coins < u.cost ? 'disabled' : '') + '>' + (bought ? 'Открыто' : u.cost + ' 💰') + '';
-card.querySelector('button').addEventListener('click', () => {
+card.querySelector('button').addEventListener('click', function() {
 if (!bought && data.coins >= u.cost) { data.coins -= u.cost; data.unlocked.push(u.id); save(); updateHUD(); renderTray(); renderShop(); tone(700, 0.2, 'sine', 0.1); }
 });
 list.appendChild(card);
 });
 }
-document.getElementById('shop-btn').addEventListener('click', () => { renderShop(); document.getElementById('shop-modal').classList.add('open'); });
-document.getElementById('btn-close-shop').addEventListener('click', () => { document.getElementById('shop-modal').classList.remove('open'); });
-document.getElementById('shop-modal').addEventListener('click', e => { if (e.target === e.currentTarget) e.currentTarget.classList.remove('open'); });
+document.getElementById('shop-btn').addEventListener('click', function() { renderShop(); document.getElementById('shop-modal').classList.add('open'); });
+document.getElementById('btn-close-shop').addEventListener('click', function() { document.getElementById('shop-modal').classList.remove('open'); });
+document.getElementById('shop-modal').addEventListener('click', function(e) { if (e.target === e.currentTarget) e.currentTarget.classList.remove('open'); });
 updateHUD(); updateSpitUI(); renderTray(); updateGrillUI(); fillQueue(); startClientTimer();
-
 
